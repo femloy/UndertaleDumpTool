@@ -127,6 +127,15 @@
                     <MenuItem Header="_Search in code" Command="{x:Static local:MainWindow.SearchInCodeCommand}" InputGestureText="Ctrl+Shift+F"></MenuItem>
                     <MenuItem Header="Find unreferenced _assets" Name="FindUnreferencedAssetsItem" Click="MenuItem_FindUnreferencedAssets_Click"/>
                 </local:MenuItemDark>
+                <local:MenuItemDark Header="_Utilities">
+                    <MenuItem Header="_Project tool" Click="MenuItem_Dump_Click">
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="{Binding CanSave}"/>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
+                </local:MenuItemDark>
                 <local:MenuItemDark Header="_Help">
                     <MenuItem Header="_GitHub" Click="MenuItem_GitHub_Click"/>
                     <MenuItem Header="_About" Click="MenuItem_About_Click"/>

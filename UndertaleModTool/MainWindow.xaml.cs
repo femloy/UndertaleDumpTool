@@ -49,6 +49,7 @@ using System.Windows.Controls.Primitives;
 using System.Runtime.CompilerServices;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using UndertaleModTool.ProjectTool;
 
 namespace UndertaleModTool
 {
@@ -201,12 +202,13 @@ namespace UndertaleModTool
 
         // Version info
         public static string Edition = "(Git: " + GitVersion.GetGitVersion().Substring(0, 7) + ")";
+        public static string AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "*";
 
         // On debug, build with git versions and provided release version. Otherwise, use the provided release version only.
 #if DEBUG || SHOW_COMMIT_HASH
-        public static string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString() + (Edition != "" ? " - " + Edition : "");
+        public static string Version = AssemblyVersion + (Edition != "" ? " - " + Edition : "");
 #else
-        public static string Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        public static string Version = AssemblyVersion;
 #endif
 
         private static readonly Color darkColor = Color.FromArgb(255, 32, 32, 32);
@@ -235,7 +237,7 @@ namespace UndertaleModTool
             Highlighted = new DescriptionView("Welcome to UndertaleModTool!", "Open a data.win file to get started, then double click on the items on the left to view them.");
             OpenInTab(Highlighted);
 
-            TitleMain = "UndertaleModTool by krzys_h v:" + Version;
+            TitleMain = "UndertaleModTool v:" + Version; // Just put the fries in the bag krzys_h quit stroking your goose
 
             CanSave = false;
             CanSafelySave = false;
@@ -2581,12 +2583,12 @@ namespace UndertaleModTool
 
         private void MenuItem_GitHub_Click(object sender, RoutedEventArgs e)
         {
-            OpenBrowser("https://github.com/UnderminersTeam/UndertaleModTool");
+            OpenBrowser("https://github.com/femloy/UndertaleMoreConvenientModTool");
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowMessage("UndertaleModTool by krzys_h and the Underminers team\nVersion " + Version, "About");
+            this.ShowMessage("UndertaleModTool by krzys_h and the Underminers team\nFork by Lila.\nVersion " + Version, "About");
         }
 
         /// From https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Dialogs/AboutAvaloniaDialog.xaml.cs
@@ -3735,6 +3737,12 @@ result in loss of work.");
             }
 
             return false;
+        }
+
+        private void MenuItem_Dump_Click(object sender, RoutedEventArgs e)
+        {
+            var a = new DumpWindow();
+            a.ShowDialog();
         }
     }
 
