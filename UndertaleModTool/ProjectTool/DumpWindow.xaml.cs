@@ -20,29 +20,24 @@ namespace UndertaleModTool.ProjectTool
     /// </summary>
     public partial class DumpWindow : Window
     {
-        Dump dump = new Dump();
-        MainWindow w = Dump.GetMainWindow();
+        Dump dump;
 
-        public DumpWindow()
+        public DumpWindow(Dump dump)
         {
             InitializeComponent();
+            this.dump = dump;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            w.SetUMTConsoleText("");
-
-            Start(); // remove this
+            // TEMPORARY
+            dump.toDump = DumpAssets.Sprites;
+            Start();
         }
 
         private void Start()
         {
             Close();
-
-            // Configure
-            dump.DoSprites = true;
-
-            // Do it
             dump.Start();
         }
     }

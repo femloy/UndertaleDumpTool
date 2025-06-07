@@ -73,6 +73,35 @@ namespace UndertaleModTool.ProjectTool.Resources
         public GMNineSliceData nineSlice { get; set; } = null;
 
         /// <summary>
+        /// Translate an UndertaleTexturePageItem into a frame and add it
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="index"></param>
+        public void AddFrameFrom(UndertaleTexturePageItem texture, int index)
+        {
+            if (_framesTrack == null)
+            {
+                _framesTrack = new();
+                sequence.tracks.Add(_framesTrack);
+            }
+
+            string frameGuid = Dump.ToGUID($"{name}.{index}");
+            frames.Add(new GMSpriteFrame { name = frameGuid });
+
+            SpriteFrameKeyframe keyframe = new();
+            keyframe.Id = new IdPath(frameGuid, $"sprites/{name}/{name}.yy");
+
+            Keyframe<SpriteFrameKeyframe> keyframeHolder = new();
+            keyframeHolder.id = Dump.ToGUID($"{name}.{index}k");
+            keyframeHolder.Key = index;
+            keyframeHolder.Channels.Add("0", keyframe);
+
+            _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
+        }
+
+        private GMSpriteFramesTrack _framesTrack;
+
+        /// <summary>
         /// Translate an UndertaleSprite to a new GMSprite
         /// </summary>
         /// <param name="source"></param>
@@ -86,6 +115,7 @@ namespace UndertaleModTool.ProjectTool.Resources
             (target.width, target.height) = (source.Width, source.Height);
             target.For3D = TpageAlign.IsSeparateTexture(source);
             target.textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).Name.Content);
+            target.nineSlice = GMNineSliceData.From(source.V3NineSlice);
 
             #region Sprite origin
 
@@ -141,32 +171,11 @@ namespace UndertaleModTool.ProjectTool.Resources
             target.sequence.length = source.Textures.Count;
             (target.sequence.xorigin, target.sequence.yorigin) = (source.OriginX, source.OriginY);
 
-            GMSpriteFramesTrack framesTrack = new();
-
             for (var i = 0; i < source.Textures.Count; ++i)
             {
                 UndertaleTexturePageItem texture = source.Textures[i].Texture;
-
-                string frameGuid = Dump.ToGUID($"{target.name}.{i}");
-                target.frames.Add(new GMSpriteFrame { name = frameGuid });
-
-                SpriteFrameKeyframe keyframe = new();
-                keyframe.Id = new IdPath(frameGuid, $"sprites/{target.name}/{target.name}.yy");
-
-                Keyframe<SpriteFrameKeyframe> keyframeHolder = new();
-                keyframeHolder.id = Dump.ToGUID($"{target.name}.{i}k");
-                keyframeHolder.Key = i;
-                keyframeHolder.Channels.Add("0", keyframe);
-
-                framesTrack.keyframes.Keyframes.Add(keyframeHolder);
+                target.AddFrameFrom(texture, i);
             }
-
-            target.sequence.tracks.Add(framesTrack);
-
-            #endregion
-            #region Nine slice
-
-            // TODO
 
             #endregion
 
@@ -225,5 +234,27 @@ namespace UndertaleModTool.ProjectTool.Resources
         public bool enabled { get; set; } = false;
         public TileMode[] tileMode { get; set; } = new TileMode[] { TileMode.Stretch, TileMode.Stretch, TileMode.Stretch, TileMode.Stretch, TileMode.Stretch };
         public object loadedVersion { get; set; } = null; // ???
+
+        /// <summary>
+        /// Translate an UndertaleSprite.NineSlice to GMNineSliceData
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static GMNineSliceData From(UndertaleSprite.NineSlice source)
+        {
+            if (source == null) return null;
+
+            GMNineSliceData target = new();
+
+            target.left = source.Left;
+            target.top = source.Top;
+            target.right = source.Right;
+            target.bottom = source.Bottom;
+            target.enabled = source.Enabled;
+            for (int i = 0; i < 5; i++)
+                target.tileMode[i] = (TileMode)source.TileModes[i];
+
+            return target;
+        }
     }
 }

@@ -6,20 +6,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
+using UndertaleModLib;
 using UndertaleModLib.Models;
 using UndertaleModTool.ProjectTool.Resources;
 
 namespace UndertaleModTool.ProjectTool
 {
+    [Flags]
+    public enum DumpAssets
+    {
+        Sprites = 1,
+        Test1 = 2,
+        Test2 = 4,
+        Test3 = 8,
+        Test4 = 16
+    }
+
     public class Dump
     {
-        MainWindow w = GetMainWindow();
+        public string basePath;
+        public DumpAssets toDump = 0;
 
-        public bool DoSprites;
-
-        public static MainWindow GetMainWindow() => Application.Current.MainWindow as MainWindow;
-
-        public static string ToGUID(string? seed)
+        public static string ToGUID(string seed)
         {
             if (string.IsNullOrEmpty(seed))
                 return new Guid().ToString();
@@ -45,12 +53,26 @@ namespace UndertaleModTool.ProjectTool
         {
             TpageAlign.Init();
 
-            var a = GMSprite.From(w.Selected as UndertaleSprite);
-            w.ScriptMessage(ToJson(a));
+            if (toDump.HasFlag(DumpAssets.Sprites))
+            {
+                var a = GMSprite.From(MainWindow.Get().Selected as UndertaleSprite); // temporary. still figuring it out Pal.
+                Info(ToJson(a));
+            }
 
-            //w.ScriptMessage($"{ToGUID($"spr0")}\n{ToGUID($"spr0")}\n{ToGUID($"spr0")}\n\n{ToGUID($"spr1")}\n{ToGUID($"spr2")}\n{ToGUID($"spr3")}");
-
-            w.SetUMTConsoleText("Done");
+            Log("Done");
         }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Thank me later BUDDY
+        /// </summary>
+        public static void Info(string message) => MainWindow.Get().ScriptMessage(message);
+        public static void Error(string message) => MainWindow.Get().ScriptError(message);
+        public static void Log(string message) => MainWindow.Get().SetUMTConsoleText(message);
+        public static UndertaleData Data => MainWindow.Get().Data;
     }
 }
