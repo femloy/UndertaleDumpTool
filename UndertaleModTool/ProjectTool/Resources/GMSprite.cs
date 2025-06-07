@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UndertaleModLib.Models;
+using static UndertaleModLib.Models.UndertaleSequence;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -40,7 +41,8 @@ namespace UndertaleModTool.ProjectTool.Resources
             MiddleRight,
             BottomLeft,
             BottomCentre,
-            BottomRight
+            BottomRight,
+            Custom
         }
 
         public BboxMode bboxMode { get; set; } = BboxMode.Automatic;
@@ -77,10 +79,37 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// <returns></returns>
         public static GMSprite From(UndertaleSprite source)
         {
-            GMSprite target = new GMSprite();
+            if (source == null) return null;
 
+            GMSprite target = new GMSprite();
             target.name = source.Name.Content;
             (target.width, target.height) = (source.Width, source.Height);
+            target.For3D = TpageAlign.IsSeparateTexture(source);
+            target.textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).Name.Content);
+
+            #region Sprite origin
+
+            target.origin = 0;
+
+            if (source.OriginX == MathF.Floor(target.width / 2f))
+                target.origin += 1;
+            else if (source.OriginX == target.width)
+                target.origin += 2;
+            else if (source.OriginX != 0)
+                target.origin = Origin.Custom;
+
+            if (target.origin != Origin.Custom)
+            {
+                if (source.OriginY == MathF.Floor(target.height / 2f))
+                    target.origin += 3;
+                else if (source.OriginY == target.height)
+                    target.origin += 6;
+                else if (source.OriginY != 0)
+                    target.origin = Origin.Custom;
+            }
+
+            #endregion
+            #region Bounding box
 
             target.bbox_left = source.MarginLeft;
             target.bbox_right = source.MarginRight;
@@ -102,8 +131,46 @@ namespace UndertaleModTool.ProjectTool.Resources
             else if (source.SepMasks == UndertaleSprite.SepMaskType.RotatedRect)
                 target.collisionKind = CollisionKind.RotatedRectangle;
 
-            // continue tomorrow
+            #endregion
+            #region Sequence
 
+            target.sequence.name = target.name;
+            target.sequence.playback = GMSequence.PlaybackType.Looped;
+            target.sequence.playbackSpeed = source.GMS2PlaybackSpeed;
+            target.sequence.playbackSpeedType = (GMSequence.PlaybackSpeedType)source.GMS2PlaybackSpeedType;
+            target.sequence.length = source.Textures.Count;
+            (target.sequence.xorigin, target.sequence.yorigin) = (source.OriginX, source.OriginY);
+
+            GMSpriteFramesTrack framesTrack = new();
+
+            for (var i = 0; i < source.Textures.Count; ++i)
+            {
+                UndertaleTexturePageItem texture = source.Textures[i].Texture;
+
+                string frameGuid = Dump.ToGUID($"{target.name}.{i}");
+                target.frames.Add(new GMSpriteFrame { name = frameGuid });
+
+                SpriteFrameKeyframe keyframe = new();
+                keyframe.Id = new IdPath(frameGuid, $"sprites/{target.name}/{target.name}.yy");
+
+                Keyframe<SpriteFrameKeyframe> keyframeHolder = new();
+                keyframeHolder.id = Dump.ToGUID($"{target.name}.{i}k");
+                keyframeHolder.Key = i;
+                keyframeHolder.Channels.Add("0", keyframe);
+
+                framesTrack.keyframes.Keyframes.Add(keyframeHolder);
+            }
+
+            target.sequence.tracks.Add(framesTrack);
+
+            #endregion
+            #region Nine slice
+
+            // TODO
+
+            #endregion
+
+            target.parent = new IdPath("Sprites", "folders/Sprites.yy");
             return target;
         }
     }

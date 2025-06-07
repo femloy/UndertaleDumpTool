@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
+using UndertaleModLib.Models;
 using UndertaleModTool.ProjectTool.Resources;
 
 namespace UndertaleModTool.ProjectTool
@@ -18,14 +19,14 @@ namespace UndertaleModTool.ProjectTool
 
         public static MainWindow GetMainWindow() => Application.Current.MainWindow as MainWindow;
 
-        public string ToGUID(string? seed)
+        public static string ToGUID(string? seed)
         {
             if (string.IsNullOrEmpty(seed))
                 return new Guid().ToString();
-            return new Guid(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(seed))).ToString();
+            return new Guid(MD5.HashData(Encoding.UTF8.GetBytes(seed))).ToString();
         }
 
-        public string ToJson(object obj)
+        public static string ToJson(object obj)
         {
             var settings = new JsonSerializerSettings
             {
@@ -42,7 +43,9 @@ namespace UndertaleModTool.ProjectTool
 
         public void Start()
         {
-            var a = GMSprite.From(w.Data.Sprites[0]);
+            TpageAlign.Init();
+
+            var a = GMSprite.From(w.Selected as UndertaleSprite);
             w.ScriptMessage(ToJson(a));
 
             //w.ScriptMessage($"{ToGUID($"spr0")}\n{ToGUID($"spr0")}\n{ToGUID($"spr0")}\n\n{ToGUID($"spr1")}\n{ToGUID($"spr2")}\n{ToGUID($"spr3")}");

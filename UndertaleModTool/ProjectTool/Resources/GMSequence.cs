@@ -57,7 +57,7 @@ namespace UndertaleModTool.ProjectTool.Resources
         {
             resourceType = $"KeyframeStore<{typeof(T).Name}>";
         }
-        public List<T> Keyframes { get; set; } = new();
+        public List<Keyframe<T>> Keyframes { get; set; } = new();
     }
 
     /// <summary>
