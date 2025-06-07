@@ -1,1 +1,1 @@
-I do this.
+This is a personal project. I will not address any issues or possible improvements that I do not come across myself unless it's from a friend. I also won't take this down by request as I have no respect for those who try to prevent what I do.
