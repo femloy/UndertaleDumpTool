@@ -3771,23 +3771,22 @@ result in loss of work.");
         /// <summary>
         /// Dump stuff
         /// </summary>
-        private Dump _dump = null;
+        public Dump Dump = null;
         private DumpWindow _dumpWindow = null;
 
         private void MenuItem_Dump_Click(object sender, RoutedEventArgs e)
         {
             SetUMTConsoleText("");
 
-            _dump = new Dump();
-            _dumpWindow = new DumpWindow(_dump);
+            Dump = new Dump();
+            _dumpWindow = new DumpWindow(Dump);
             _dumpWindow.ShowDialog();
 
-            _dump.Dispose();
-            _dump = null;
+            Dump.Dispose();
+            Dump = null;
         }
 
         public static MainWindow Get() => Application.Current.MainWindow as MainWindow;
-        public static Dump GetDump() => Get()._dump;
     }
 
     public class GeneralInfoEditor

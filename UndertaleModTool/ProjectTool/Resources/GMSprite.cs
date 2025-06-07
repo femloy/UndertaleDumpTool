@@ -90,12 +90,10 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             SpriteFrameKeyframe keyframe = new();
             keyframe.Id = new IdPath(frameGuid, $"sprites/{name}/{name}.yy");
-
             Keyframe<SpriteFrameKeyframe> keyframeHolder = new();
             keyframeHolder.id = Dump.ToGUID($"{name}.{index}k");
             keyframeHolder.Key = index;
             keyframeHolder.Channels.Add("0", keyframe);
-
             _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
         }
 

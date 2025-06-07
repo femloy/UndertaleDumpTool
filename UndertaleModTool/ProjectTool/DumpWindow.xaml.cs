@@ -37,6 +37,13 @@ namespace UndertaleModTool.ProjectTool
 
         private void Start()
         {
+            dump.basePath = MainWindow.Get().PromptChooseDirectory();
+            if (dump.basePath == null)
+            {
+                Close();
+                return;
+            }
+
             Close();
             dump.Start();
         }
