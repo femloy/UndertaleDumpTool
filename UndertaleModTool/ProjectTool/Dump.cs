@@ -29,7 +29,7 @@ namespace UndertaleModTool.ProjectTool
     {
         public string basePath;
         public DumpAssets toDump = 0;
-        TextureWorker worker = new();
+        TextureWorker _worker = new();
 
         public void Start()
         {
@@ -37,8 +37,7 @@ namespace UndertaleModTool.ProjectTool
 
             if (toDump.HasFlag(DumpAssets.Sprites))
             {
-                var a = GMSprite.From(MainWindow.Get().Selected as UndertaleSprite); // temporary. still figuring it out Pal.
-                Info(ToJson(a));
+                GMSprite.From(MainWindow.Get().Selected as UndertaleSprite)?.Save(); // temporary. still figuring it out Pal.
             }
 
             Log("Done");
@@ -46,12 +45,13 @@ namespace UndertaleModTool.ProjectTool
 
         public void Dispose()
         {
-            worker.Dispose();
-            worker = null;
+            _worker.Dispose();
+            _worker = null;
 
             GC.SuppressFinalize(this);
         }
 
         public static Dump Get() => MainWindow.Get().Dump;
+        public static TextureWorker texWorker => Get()._worker;
     }
 }

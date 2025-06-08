@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,95 +11,113 @@ using Newtonsoft.Json.Linq;
 
 namespace UndertaleModTool.ProjectTool
 {
-    public class YYJson : JsonConverter
+    public static class YYJson
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(ICollection).IsAssignableFrom(objectType);
-        }
+        static string INDENT = "  ";
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// Depth for objects to start being flattened
+		/// </summary>
+		static int flatDepth = 2;
 
-        public override bool CanRead => false;
+		/// <summary>
+		/// Add newline and indentation depending on depth
+		/// </summary>
+		/// <param name="sb"></param>
+		/// <param name="depth"></param>
+		static void YYIndent(this StringBuilder sb, int depth)
+		{
+			sb.Append('\n');
+			foreach (var item in Enumerable.Range(0, depth))
+				sb.Append(INDENT);
+		}
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		/// <summary>
+		/// Format a JSON like the weird inconsistent way GameMaker does it
+		/// </summary>
+		/// <param name="json"></param>
+		/// <returns></returns>
+        public static string Format(string json)
         {
-            if (value is IEnumerable<object> list)
+			// WIP.
+            StringBuilder sb = new();
+			Stack<bool> depth = new();
+			bool isObject = false;
+
+            for (var _ = 0; _ < json.Length; _++)
             {
-                writer.WriteStartArray();
+				char c = json[_];
+				char nextC = '\0';
+				char prevC = '\0';
 
-                foreach (var item in list)
+				if (_ > 0)
+					prevC = json[_ - 1];
+				if (_ < json.Length - 1)
+					nextC = json[_ + 1];
+
+                switch (c)
                 {
-                    var json = JsonConvert.SerializeObject(item, Formatting.None);
-                    writer.WriteRawValue(json);
+                    case '{':
+						sb.Append(c);
+						depth.Push(isObject);
+						if (depth.Count <= flatDepth)
+						{
+							isObject = false;
+							if (nextC != '}')
+								sb.YYIndent(depth.Count);
+						}
+						else
+							isObject = true;
+						break;
+
+                    case '}':
+						if (prevC != '{')
+						{
+							sb.Append(',');
+							if (!isObject)
+								sb.YYIndent(depth.Count - 1);
+						}
+						isObject = depth.Pop();
+						sb.Append(c);
+						break;
+
+					case '[':
+						sb.Append(c);
+						depth.Push(isObject);
+						isObject = false;
+						if (nextC != ']')
+							sb.YYIndent(depth.Count);
+						break;
+
+					case ']':
+						if (prevC != '[')
+						{
+							sb.Append(',');
+							sb.YYIndent(depth.Count - 1);
+						}
+						isObject = depth.Pop();
+						sb.Append(c);
+						break;
+
+                    case ':':
+						sb.Append(c);
+						if (!isObject)
+							sb.Append(' ');
+						break;
+
+					case ',':
+						sb.Append(c);
+						if (!isObject)
+							sb.YYIndent(depth.Count);
+						break;
+
+					default:
+						sb.Append(c);
+						break;
                 }
+			}
 
-                writer.WriteEndArray();
-            }
-        }
-    }
-
-    public class YYFlatJson : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            JObject jo = new JObject();
-            Type type = value.GetType();
-
-            var sortedProperties = type.GetProperties();
-            foreach (PropertyInfo prop in sortedProperties)
-            {
-                if (!prop.CanRead || prop.GetIndexParameters().Length > 0)
-                    continue;
-
-                object propVal = prop.GetValue(value, null);
-
-                //Dump.GetMainWindow().ScriptMessage($"{prop} - {propVal}");
-
-                bool allow_null = true;
-                bool allow_default = true;
-
-                var jsonPropertyAttribute = prop.GetCustomAttribute<JsonPropertyAttribute>();
-                if (jsonPropertyAttribute != null)
-                {
-                    if (jsonPropertyAttribute.NullValueHandling == NullValueHandling.Ignore)
-                        allow_null = false;
-                    if (jsonPropertyAttribute.DefaultValueHandling == DefaultValueHandling.Ignore)
-                        allow_default = false;
-                }
-
-                if (propVal == null)
-                {
-                    if (allow_null)
-                        jo.Add(prop.Name, null);
-                    continue;
-                }
-                if (!allow_default)
-                {
-                    // This is fucking terrible.
-                    if (propVal is IList && ((IList)propVal).Count == 0)
-                        continue;
-                }
-
-                jo.Add(prop.Name, JToken.FromObject(propVal, serializer));
-            }
-
-            jo.WriteTo(writer);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanRead => false;
-
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.IsClass && objectType != typeof(string) && !typeof(ICollection).IsAssignableFrom(objectType);
+            return sb.ToString();
         }
     }
 }

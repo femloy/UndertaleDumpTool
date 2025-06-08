@@ -22,19 +22,14 @@ namespace UndertaleModTool.ProjectTool
         {
             var settings = new JsonSerializerSettings
             {
-                Formatting = Formatting.Indented,
                 ObjectCreationHandling = ObjectCreationHandling.Replace,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
             };
-
-            settings.Converters.Add(new YYJson());
-            settings.Converters.Add(new YYFlatJson());
-
-            return JsonConvert.SerializeObject(obj, settings);
+            return YYJson.Format(JsonConvert.SerializeObject(obj, settings));
         }
-        public static void ToJsonFile(object obj, string relativePath = "")
+        public static void ToJsonFile(string absolutePath, object obj)
         {
-            File.WriteAllText(Get().basePath + relativePath, ToJson(obj));
+            File.WriteAllText(absolutePath, ToJson(obj));
         }
 
         /// <summary>

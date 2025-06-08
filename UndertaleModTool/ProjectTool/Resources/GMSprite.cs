@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageMagick;
 using UndertaleModLib.Models;
+using UndertaleModLib.Util;
 using static UndertaleModLib.Models.UndertaleSequence;
 
 namespace UndertaleModTool.ProjectTool.Resources
@@ -95,9 +98,14 @@ namespace UndertaleModTool.ProjectTool.Resources
             keyframeHolder.Key = index;
             keyframeHolder.Channels.Add("0", keyframe);
             _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
+
+            IMagickImage<byte> image = Dump.texWorker.GetTextureFor(texture, $"{name}_{index}.png", true);
+            _imageFiles.Add($"{frameGuid}", image);
+            _imageFiles.Add($"layers/{frameGuid}/{layers[0].name}", image);
         }
 
         private GMSpriteFramesTrack _framesTrack;
+        private Dictionary<string, IMagickImage<byte>> _imageFiles = new();
 
         /// <summary>
         /// Translate an UndertaleSprite to a new GMSprite
@@ -169,6 +177,10 @@ namespace UndertaleModTool.ProjectTool.Resources
             target.sequence.length = source.Textures.Count;
             (target.sequence.xorigin, target.sequence.yorigin) = (source.OriginX, source.OriginY);
 
+            var layer = new GMImageLayer();
+            layer.name = Dump.ToGUID($"{target.name}.layer");
+            target.layers.Add(layer);
+
             for (var i = 0; i < source.Textures.Count; ++i)
             {
                 UndertaleTexturePageItem texture = source.Textures[i].Texture;
@@ -179,6 +191,32 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             target.parent = new IdPath("Sprites", "folders/Sprites.yy");
             return target;
+        }
+
+        /// <summary>
+        /// Saves the sprite into GameMaker project format
+        /// </summary>
+        /// <param name="spriteFolder">The folder that will contain this one sprite's files (not the sprites folder)</param>
+        public GMSprite Save(string spriteFolder = null)
+        {
+            if (spriteFolder == null)
+                spriteFolder = $"sprites/{name}/";
+
+            string savePath = Path.Combine(Dump.Get().basePath, spriteFolder);
+            Directory.CreateDirectory(savePath);
+
+            // .yy
+            Dump.ToJsonFile(Path.Join(savePath, $"{name}.yy"), this);
+
+            // .png
+            foreach (var i in _imageFiles)
+            {
+				string path = Path.Combine(savePath, i.Key);
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
+				TextureWorker.SaveImageToFile(i.Value, path + ".png");
+            }
+
+            return this;
         }
     }
     public class GMSpriteFrame : ResourceBase
