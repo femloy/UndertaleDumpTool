@@ -23,9 +23,15 @@ namespace UndertaleModTool.ProjectTool.Resources
         public int border { get; set; } = 2;
         public int mipsToGenerate { get; set; } = 0;
         public IdPath groupParent { get; set; } = null;
-        public int targets { get; set; } = -1; // TODO
-    }
+		public GMTarget targets { get; set; } = GMTarget.All;
 
+	}
+
+	/// <summary>
+	/// Helps align sprites to their respective groups during a dump
+	/// Because UndertaleModTool is dogshit and doesn't just have a texture group dropdown list in the sprite itself
+	/// Even though it really fucking should
+	/// </summary>
     public static class TpageAlign
     {
         private static Dictionary<string, UndertaleTextureGroupInfo> _align = new();
@@ -55,7 +61,7 @@ namespace UndertaleModTool.ProjectTool.Resources
         public static UndertaleTextureGroupInfo DefaultGroup()
         {
             if (TextureGroups.Count == 0)
-                throw new Exception();
+                throw new Exception("You fucked up so badly that this data.win has no texture groups please fix this");
             return TextureGroups[0];
         }
         public static UndertaleTextureGroupInfo TextureFor(UndertaleNamedResource source)
