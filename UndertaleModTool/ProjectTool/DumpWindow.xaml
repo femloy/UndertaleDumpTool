@@ -10,8 +10,16 @@
         ResizeMode="NoResize"
         Loaded="Window_Loaded">
     <Grid>
-        <Label Content="Warning: Decompiling with UTMT is an unreliable process." RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold">
-            <Label.RenderTransform>
+        <Label RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold">
+			<TextBlock TextAlignment="Center">
+				Warning: This is meant for UNDERTALE and DELTARUNE, and nothing else.
+				<LineBreak/>
+				Decompiling with UTMT is unreliable for most other cases including mods.
+				<LineBreak/>
+				<LineBreak/>
+				Also I'm still working on this.
+			</TextBlock>
+			<Label.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="0" Y="8"/>
                 </TransformGroup>

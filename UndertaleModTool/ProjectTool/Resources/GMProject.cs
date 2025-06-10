@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UndertaleModLib;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -47,30 +48,26 @@ namespace UndertaleModTool.ProjectTool.Resources
 			public IdPath id { get; set; }
 			public uint order { get; set; }
 		}
-
-		public enum ScriptType
-		{
-			Ask,
-			GML,
-			DND
-		}
-
 		public class Config
 		{
 			public string name { get; set; } = "Default";
 			public List<Config> children { get; set; } = new();
 		}
-
 		public class RoomOrderNode
 		{
 			// Most useless fucking class. Thanks, Little YoYo !
 			public IdPath roomId { get; set; }
 		}
-
 		public class MetaDataClass
 		{
 			// Probably just a Dictionary<string, string> but who give shit Truly?
 			public string IDEVersion { get; set; } = "2022.0.3.85";
+		}
+		public enum ScriptType
+		{
+			Ask,
+			GML,
+			DND
 		}
 
 		public List<Resource> resources { get; set; } = new();
@@ -84,25 +81,38 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public List<GMTextureGroup> TextureGroups { get; set; } = new();
 		public List<IdPath> IncludedFiles { get; set; } = new();
 		public MetaDataClass MetaData { get; set; } = new();
+
+		/// <summary>
+		/// Create GMProject out of UndertaleData
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		public GMProject(UndertaleData source) : this()
+		{
+			name = source.GeneralInfo.Name.Content;
+
+			if (source.GeneralInfo.Config.Content != "Default")
+				configs.children.Add(new Config() { name = source.GeneralInfo.Config.Content });
+
+			// WIP
+		}
+
+		public GMProject Save()
+		{
+			return this;
+		}
 	}
 
 	public class GMFolder : ResourceBase
 	{
-		public string folderPath { get; set; }
-		public uint order { get; set; }
-
-		/// <summary>
-		/// Create a GMFolder out of a path
-		/// </summary>
-		/// <param name="nameAndPath">Something like "Sprites/folder" or just "folder"</param>
-		/// <returns></returns>
-		public static GMFolder From(string nameAndPath)
+		public GMFolder(string nameAndPath) : base()
 		{
-			var folder = new GMFolder();
-			folder.name = Path.GetFileNameWithoutExtension(nameAndPath);
-			folder.folderPath = $"folders/{nameAndPath}.yy";
-			return folder;
+			name = Path.GetFileNameWithoutExtension(nameAndPath);
+			folderPath = $"folders/{nameAndPath}.yy";
 		}
+
+		public string folderPath { get; set; }
+		public int order { get; set; }
 	}
 
 	public class GMAudioGroup : ResourceBase

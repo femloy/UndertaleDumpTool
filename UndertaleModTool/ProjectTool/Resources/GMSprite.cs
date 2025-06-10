@@ -99,7 +99,7 @@ namespace UndertaleModTool.ProjectTool.Resources
             keyframeHolder.Channels.Add("0", keyframe);
             _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
 
-            IMagickImage<byte> image = Dump.texWorker.GetTextureFor(texture, $"{name}_{index}.png", true);
+            IMagickImage<byte> image = Dump.TexWorker.GetTextureFor(texture, $"{name}_{index}.png", true);
             _imageFiles.Add($"{frameGuid}", image);
             _imageFiles.Add($"layers/{frameGuid}/{layers[0].name}", image);
         }
@@ -112,85 +112,85 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static GMSprite From(UndertaleSprite source)
+        public GMSprite(UndertaleSprite source) : base()
         {
-            if (source == null) return null;
+            name = source.Name.Content;
+            (width, height) = (source.Width, source.Height);
+            nineSlice = GMNineSliceData.From(source.V3NineSlice);
 
-            GMSprite target = new GMSprite();
-            target.name = source.Name.Content;
-            (target.width, target.height) = (source.Width, source.Height);
-            target.For3D = TpageAlign.IsSeparateTexture(source);
-            target.textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).Name.Content);
-            target.nineSlice = GMNineSliceData.From(source.V3NineSlice);
+			if (Dump.Options.asset_texturegroups)
+			{
+				For3D = TpageAlign.IsSeparateTexture(source);
+				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).Name.Content);
+			}
 
-            #region Sprite origin
+			#region Sprite origin
 
-            target.origin = 0;
+			origin = 0;
 
-            if (source.OriginX == MathF.Floor(target.width / 2f))
-                target.origin += 1;
-            else if (source.OriginX == target.width)
-                target.origin += 2;
+            if (source.OriginX == MathF.Floor(width / 2f))
+                origin += 1;
+            else if (source.OriginX == width)
+                origin += 2;
             else if (source.OriginX != 0)
-                target.origin = Origin.Custom;
+                origin = Origin.Custom;
 
-            if (target.origin != Origin.Custom)
+            if (origin != Origin.Custom)
             {
-                if (source.OriginY == MathF.Floor(target.height / 2f))
-                    target.origin += 3;
-                else if (source.OriginY == target.height)
-                    target.origin += 6;
+                if (source.OriginY == MathF.Floor(height / 2f))
+                    origin += 3;
+                else if (source.OriginY == height)
+                    origin += 6;
                 else if (source.OriginY != 0)
-                    target.origin = Origin.Custom;
+                    origin = Origin.Custom;
             }
 
             #endregion
             #region Bounding box
 
-            target.bbox_left = source.MarginLeft;
-            target.bbox_right = source.MarginRight;
-            target.bbox_bottom = source.MarginBottom;
-            target.bbox_top = source.MarginTop;
-            target.bboxMode = (BboxMode)source.BBoxMode;
+            bbox_left = source.MarginLeft;
+            bbox_right = source.MarginRight;
+            bbox_bottom = source.MarginBottom;
+            bbox_top = source.MarginTop;
+            bboxMode = (BboxMode)source.BBoxMode;
 
             if (source.SepMasks == UndertaleSprite.SepMaskType.Precise)
             {
                 if (source.CollisionMasks.Count > 1)
-                    target.collisionKind = CollisionKind.PrecisePerFrame;
+                    collisionKind = CollisionKind.PrecisePerFrame;
                 else
                 {
-                    target.collisionKind = CollisionKind.Precise;
+                    collisionKind = CollisionKind.Precise;
 
                     // TODO: could be diamond or ellipse
                 }
             }
             else if (source.SepMasks == UndertaleSprite.SepMaskType.RotatedRect)
-                target.collisionKind = CollisionKind.RotatedRectangle;
+                collisionKind = CollisionKind.RotatedRectangle;
 
             #endregion
             #region Sequence
 
-            target.sequence.name = target.name;
-            target.sequence.playback = GMSequence.PlaybackType.Looped;
-            target.sequence.playbackSpeed = source.GMS2PlaybackSpeed;
-            target.sequence.playbackSpeedType = (GMSequence.PlaybackSpeedType)source.GMS2PlaybackSpeedType;
-            target.sequence.length = source.Textures.Count;
-            (target.sequence.xorigin, target.sequence.yorigin) = (source.OriginX, source.OriginY);
+            sequence.name = name;
+            sequence.playback = GMSequence.PlaybackType.Looped;
+            sequence.playbackSpeed = source.GMS2PlaybackSpeed;
+            sequence.playbackSpeedType = (GMSequence.PlaybackSpeedType)source.GMS2PlaybackSpeedType;
+            sequence.length = source.Textures.Count;
+            (sequence.xorigin, sequence.yorigin) = (source.OriginX, source.OriginY);
 
             var layer = new GMImageLayer();
-            layer.name = Dump.ToGUID($"{target.name}.layer");
-            target.layers.Add(layer);
+            layer.name = Dump.ToGUID($"{name}.layer");
+            layers.Add(layer);
 
             for (var i = 0; i < source.Textures.Count; ++i)
             {
                 UndertaleTexturePageItem texture = source.Textures[i].Texture;
-                target.AddFrameFrom(texture, i);
+                AddFrameFrom(texture, i);
             }
 
             #endregion
 
-            target.parent = new IdPath("Sprites", "folders/Sprites.yy");
-            return target;
+            parent = new IdPath("Sprites", "folders/Sprites.yy");
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace UndertaleModTool.ProjectTool.Resources
             if (spriteFolder == null)
                 spriteFolder = $"sprites/{name}/";
 
-            string savePath = Path.Combine(Dump.Get().basePath, spriteFolder);
+            string savePath = Path.Combine(Dump.Get().BasePath, spriteFolder);
             Directory.CreateDirectory(savePath);
 
             // .yy

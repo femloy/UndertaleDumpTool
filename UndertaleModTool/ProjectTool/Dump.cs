@@ -15,30 +15,23 @@ using UndertaleModTool.ProjectTool.Resources;
 
 namespace UndertaleModTool.ProjectTool
 {
-    [Flags]
-    public enum DumpAssets
-    {
-        Sprites = 1,
-        Test1 = 2,
-        Test2 = 4,
-        Test3 = 8,
-        Test4 = 16
-    }
-
     public partial class Dump
     {
-        public string basePath;
-        public DumpAssets toDump = 0;
+        public string BasePath;
+		private DumpOptions _options = new();
         TextureWorker _worker = new();
+		private GMProject _project = new();
 
         public void Start()
         {
-            TpageAlign.Init();
+			if (Options.asset_project)
+				_project = new GMProject(MainWindow.Get().Data).Save();
 
-            if (toDump.HasFlag(DumpAssets.Sprites))
-            {
-                GMSprite.From(MainWindow.Get().Selected as UndertaleSprite)?.Save(); // temporary. still figuring it out Pal.
-            }
+			if (Options.asset_texturegroups)
+				TpageAlign.Init();
+
+            if (Options.asset_sprites)
+                new GMSprite(MainWindow.Get().Selected as UndertaleSprite)?.Save(); // temporary. still figuring it out Pal.
 
             Log("Done");
         }
@@ -51,7 +44,15 @@ namespace UndertaleModTool.ProjectTool
             GC.SuppressFinalize(this);
         }
 
+		public static void AddFolder(string nameAndPath)
+		{
+			var project = Get()?._project;
+			if (project == null) return;
+			project.Folders.Add(new GMFolder(nameAndPath) { order = project.Folders.Count });
+		}
+
         public static Dump Get() => MainWindow.Get().Dump;
-        public static TextureWorker texWorker => Get()._worker;
+        public static TextureWorker TexWorker => Get()?._worker;
+		public static DumpOptions Options => Get()?._options;
     }
 }

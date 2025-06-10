@@ -31,14 +31,13 @@ namespace UndertaleModTool.ProjectTool
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // TEMPORARY
-            dump.toDump = DumpAssets.Sprites;
             Start();
         }
 
         private void Start()
         {
-            dump.basePath = MainWindow.Get().PromptChooseDirectory();
-            if (dump.basePath == null)
+            dump.BasePath = MainWindow.Get().PromptChooseDirectory();
+            if (dump.BasePath == null)
             {
                 Close();
                 return;
