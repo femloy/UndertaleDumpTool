@@ -60,7 +60,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 					if (!doBorder && !doCrop)
 						break;
 
-					var items = MainWindow.Get().Data.TexturePageItems.Where(i => i.TexturePage == texPage.Resource).ToList();
+					var items = Dump.Data.TexturePageItems.Where(i => i.TexturePage == texPage.Resource).ToList();
 					if (items.Count > 0)
 					{
 						if (doBorder)

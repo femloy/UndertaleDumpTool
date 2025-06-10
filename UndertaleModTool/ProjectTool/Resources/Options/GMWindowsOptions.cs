@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using UndertaleModLib;
+using UndertaleModTool.ProjectTool.Resources.Options;
 
 namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 {
@@ -55,5 +57,19 @@ namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 		public bool option_windows_enable_steam { get; set; } = false;
 		public bool option_windows_disable_sandbox { get; set; } = false;
 		public bool option_windows_steam_use_alternative_launcher { get; set; } = false;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		public GMWindowsOptions(UndertaleData source) : this()
+		{
+			// TODO
+		}
+
+		public GMWindowsOptions Save()
+		{
+			return this;
+		}
 	}
 }

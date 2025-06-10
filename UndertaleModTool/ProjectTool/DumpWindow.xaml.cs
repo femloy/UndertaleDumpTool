@@ -20,31 +20,33 @@ namespace UndertaleModTool.ProjectTool
     /// </summary>
     public partial class DumpWindow : Window
     {
-        Dump dump;
+        Dump Dump;
 
         public DumpWindow(Dump dump)
         {
             InitializeComponent();
-            this.dump = dump;
+            Dump = dump;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // TEMPORARY
-            Start();
+			// TEMPORARY
+			Dump.Options.data_filename = Dump.MainWindow.FilePath;
+			_ = Start();
         }
 
-        private void Start()
+        private async Task Start()
         {
-            dump.BasePath = MainWindow.Get().PromptChooseDirectory();
-            if (dump.BasePath == null)
+            Dump.BasePath = Dump.MainWindow.PromptChooseDirectory();
+            if (Dump.BasePath == null)
             {
                 Close();
+				Dump.Log("Canceled");
                 return;
             }
 
-            Close();
-            dump.Start();
-        }
+			Close();
+			await Dump.Start();
+		}
     }
 }

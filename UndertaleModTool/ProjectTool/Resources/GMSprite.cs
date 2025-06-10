@@ -202,7 +202,7 @@ namespace UndertaleModTool.ProjectTool.Resources
             if (spriteFolder == null)
                 spriteFolder = $"sprites/{name}/";
 
-            string savePath = Path.Combine(Dump.Get().BasePath, spriteFolder);
+            string savePath = Dump.RelativePath(spriteFolder);
             Directory.CreateDirectory(savePath);
 
             // .yy

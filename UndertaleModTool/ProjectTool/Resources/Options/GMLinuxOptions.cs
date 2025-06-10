@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UndertaleModLib;
+using UndertaleModTool.ProjectTool.Resources.GMOptions;
 
 namespace UndertaleModTool.ProjectTool.Resources.Options
 {
@@ -38,5 +40,19 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 		public string option_linux_texture_page { get; set; } = "2048x2048";
 		public bool option_linux_enable_steam { get; set; } = false;
 		public bool option_linux_disable_sandbox { get; set; } = false;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		public GMLinuxOptions(UndertaleData source) : this()
+		{
+			// TODO
+		}
+
+		public GMLinuxOptions Save()
+		{
+			return this;
+		}
 	}
 }

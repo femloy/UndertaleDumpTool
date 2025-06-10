@@ -3779,12 +3779,26 @@ result in loss of work.");
             SetUMTConsoleText("");
 
             Dump = new Dump();
+			Dump.MainWindow = this;
+			Dump.Current = Dump;
+
+			InitializeScriptDialog();
+			IsEnabled = false;
+
             _dumpWindow = new DumpWindow(Dump);
             _dumpWindow.ShowDialog();
+		}
 
-            Dump.Dispose();
-            Dump = null;
-        }
+		public void DumpEnd()
+		{
+			SetUMTConsoleText("");
+
+			Dump.Dispose();
+			Dump = null;
+
+			scriptDialog = null;
+			IsEnabled = true;
+		}
 
         public static MainWindow Get() => Application.Current.MainWindow as MainWindow;
     }

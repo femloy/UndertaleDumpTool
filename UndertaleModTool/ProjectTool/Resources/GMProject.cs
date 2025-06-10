@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using UndertaleModLib;
+using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -83,6 +85,25 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public MetaDataClass MetaData { get; set; } = new();
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="folder"></param>
+		public void AddResource(UndertaleNamedResource source, string folder)
+		{
+			if (folder != _previousResourceFolder)
+			{
+				_resourceOrder = 0;
+				_previousResourceFolder = folder;
+			}
+			resources.Add(new Resource(new IdPath(source.Name.Content, $"{folder}/{source.Name.Content}/{source.Name.Content}.yy"), _resourceOrder++));
+		}
+		private uint _resourceOrder = 0;
+		private string _previousResourceFolder = "";
+
+		private List<string> _detectedDatafiles = new();
+
+		/// <summary>
 		/// Create GMProject out of UndertaleData
 		/// </summary>
 		/// <param name="source"></param>
@@ -94,11 +115,97 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (source.GeneralInfo.Config.Content != "Default")
 				configs.children.Add(new Config() { name = source.GeneralInfo.Config.Content });
 
-			// WIP
+			#region Folders
+
+			string[] baseFolders =
+			{
+				"Sprites",
+				"Tile Sets",
+				"Sounds",
+				"Paths",
+				"Scripts",
+				"Shaders",
+				"Fonts",
+				"Timelines",
+				"Objects",
+				"Rooms",
+				"Sequences",
+				"Animation Curves",
+				"Notes",
+				"Extensions"
+			};
+			foreach (var item in baseFolders)
+				Folders.Add(new GMFolder(item) { order = Folders.Count });
+
+			#endregion
+			#region Groups
+
+			if (Dump.Options.asset_texturegroups)
+			{
+				foreach (var group in TpageAlign.TextureGroups)
+					TextureGroups.Add(new GMTextureGroup(group));
+			}
+			else
+				TextureGroups.Add(new GMTextureGroup() { name = "Default" });
+
+			if (Dump.Options.asset_audiogroups)
+			{
+				foreach (var group in source.AudioGroups)
+					AudioGroups.Add(new GMAudioGroup(group));
+			}
+			else
+				AudioGroups.Add(new GMAudioGroup() { name = "audiogroup_default" });
+
+			#endregion
+			#region Options
+
+			if (Dump.Options.asset_options)
+			{
+				Options.Add(new IdPath("Main", "options/main/options_main.yy"));
+				Options.Add(new IdPath("Windows", "options/windows/options_windows.yy"));
+
+				if (Dump.Options.options_other_platforms)
+				{
+					Options.Add(new IdPath("macOS", "options/mac/options_mac.yy"));
+					Options.Add(new IdPath("Linux", "options/linux/options_linux.yy"));
+					Options.Add(new IdPath("HTML5", "options/html5/options_html5.yy"));
+					Options.Add(new IdPath("Android", "options/android/options_android.yy"));
+					Options.Add(new IdPath("iOS", "options/ios/options_ios.yy"));
+					Options.Add(new IdPath("tvOS", "options/tvos/options_tvos.yy")); // Yoyo why?
+					Options.Add(new IdPath("operagx", "options/operagx/options_operagx.yy"));
+				}
+			}
+
+			#endregion
+			#region Resources (TODO)
+
+			if (Dump.Options.asset_sprites)
+			{
+				foreach (var res in source.Sprites)
+					AddResource(res, "sprites");
+			}
+
+			if (Dump.Options.asset_rooms)
+			{
+				foreach (var res in source.Rooms)
+					AddResource(res, "rooms");
+
+				foreach (var node in source.GeneralInfo.RoomOrder)
+				{
+					string nodeName = node.Resource.Name.Content;
+					RoomOrderNodes.Add(new RoomOrderNode() { roomId = new IdPath(nodeName, $"rooms/{nodeName}/{nodeName}.yy") });
+				}
+			}
+
+			#endregion
+
+			// TODO datafiles
+
 		}
 
 		public GMProject Save()
 		{
+			Dump.ToJsonFile(Dump.RelativePath($"{name}.yyp"), this);
 			return this;
 		}
 	}
@@ -120,6 +227,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public GMAudioGroup()
 		{
 			resourceVersion = "1.3";
+		}
+
+		public GMAudioGroup(UndertaleAudioGroup source) : this()
+		{
+			name = source.Name.Content;
 		}
 
 		public GMTarget targets { get; set; } = GMTarget.All;

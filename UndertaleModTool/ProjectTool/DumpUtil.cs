@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -31,13 +32,19 @@ namespace UndertaleModTool.ProjectTool
         {
             File.WriteAllText(absolutePath, ToJson(obj));
         }
+		public static string RelativePath(string path)
+		{
+			return Path.Combine(Current.BasePath, path);
+		}
 
         /// <summary>
         /// Thank me later BUDDY
         /// </summary>
-        public static void Info(string message) => MainWindow.Get().ScriptMessage(message);
-        public static void Error(string message) => MainWindow.Get().ScriptError(message);
-        public static void Log(string message) => MainWindow.Get().SetUMTConsoleText(message);
-        public static UndertaleData Data => MainWindow.Get().Data;
+        public static void Info(string message) => MainWindow.ScriptMessage(message);
+        public static void Error(string message) => MainWindow.ScriptError(message);
+		public static bool YesNoQuestion(string message) => MainWindow.ScriptQuestion(message);
+		public static void Log(string message) => MainWindow.SetUMTConsoleText(message);
+		public static void OpenInExplorer() => Process.Start("explorer.exe", Current.BasePath.Replace('/', '\\'));
+        public static UndertaleData Data => MainWindow.Data;
     }
 }
