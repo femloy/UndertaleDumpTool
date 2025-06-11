@@ -21,6 +21,7 @@ namespace UndertaleModTool.ProjectTool
     public partial class DumpWindow : Window
     {
         Dump Dump;
+		MainWindow MainWindow = Application.Current.MainWindow as MainWindow;
 
         public DumpWindow(Dump dump)
         {
@@ -37,16 +38,38 @@ namespace UndertaleModTool.ProjectTool
 
         private async Task Start()
         {
-            Dump.BasePath = Dump.MainWindow.PromptChooseDirectory();
+            Dump.BasePath = MainWindow.PromptChooseDirectory();
             if (Dump.BasePath == null)
             {
                 Close();
+				MainWindow.DumpEnd();
 				Dump.Log("Canceled");
-                return;
+				return;
             }
 
 			Close();
-			await Dump.Start();
+			MainWindow.StartProgressBarUpdater();
+
+			try
+			{
+				await Task.Run(() => Dump.Start());
+
+				MainWindow.SetUMTConsoleText("");
+
+				bool openInExplorer = Dump.YesNoQuestion("Done. Open folder?");
+				if (openInExplorer)
+					Dump.OpenInExplorer();
+			}
+			catch (Exception ex)
+			{
+				MainWindow.ScriptError($"{ex.Message}\n\n---\n\n{ex.ToString()}");
+				MainWindow.SetUMTConsoleText(ex.ToString());
+			}
+
+			await MainWindow.StopProgressBarUpdater();
+			MainWindow.HideProgressBar();
+
+			MainWindow.DumpEnd();
 		}
     }
 }

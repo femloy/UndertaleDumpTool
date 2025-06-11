@@ -13,6 +13,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 	[Flags]
 	public enum GMTarget : long
 	{
+		None = 0L,
 		All = -1L,
 		AllIncludedFile = Windows | macOS | iOS | Android | HTML5 | Ubuntu | PS4 | PS5 | Xbox | Switch | tvOS | GXgames,
 

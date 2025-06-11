@@ -33,7 +33,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		/// <returns></returns>
 		public GMTextureGroup(UndertaleTextureGroupInfo source) : this()
 		{
-			name = source.Name.Content;
+			name = source.GetName();
 
 			if (source.TexturePages != null && source.TexturePages.Count > 0)
 			{
@@ -65,6 +65,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 					{
 						if (doBorder)
 						{
+							items.RemoveAll(i => i.BoundingWidth == i.TexturePage.TextureData.Width); // No fonts. They fuck it up
+
 							items.Sort((x, y) => x.SourceX.CompareTo(y.SourceX)); // Get the left-most item in this texture page
 							border = items[0].SourceX; // Its position on the texture *should* in theory be the border size
 							doBorder = false;
@@ -105,7 +107,9 @@ namespace UndertaleModTool.ProjectTool.Resources
         {
             _align.Clear();
 			TextureGroups.Clear();
+			ConsoleGroup = false;
 
+			// Align
 			foreach (var tpage in Dump.Data.TextureGroupInfo)
             {
                 if (!tpage.Name.Content.Contains("_yyg_auto_gen_tex_group_name_"))
@@ -123,25 +127,49 @@ namespace UndertaleModTool.ProjectTool.Resources
                         _align.Add(i.Resource.Name.Content, tpage);
                 }
             }
+
+			// Texture page size
+			TexturePageSize = 256;
+
+			foreach (var tpage in Dump.Data.EmbeddedTextures)
+			{
+				var size = Math.Max(tpage.TextureData.Width, tpage.TextureData.Height);
+				if (size > TexturePageSize)
+					TexturePageSize = size;
+			}
         }
 
+		public static int TexturePageSize = 2048;
+
+		/// <summary>
+		/// Whether to add an extra "DecompiledConsoleOnly" group
+		/// </summary>
+		public static bool ConsoleGroup = false;
+
+		/// <summary>
+		/// Name for the console group
+		/// </summary>
+		public const string CONSOLE_GROUP_NAME = "RedactedGroup";
+
+		public static string GetName(this UndertaleTextureGroupInfo tpage)
+		{
+			if (tpage.Name.Content == "default")
+				return "Default";
+			if (Dump.Options.texture_uppercase_name)
+				return tpage.Name.Content.ToUpper();
+			return tpage.Name.Content;
+		}
         public static UndertaleTextureGroupInfo DefaultGroup()
         {
             if (TextureGroups.Count == 0)
-                throw new Exception("You fucked up so badly that this data.win has no texture groups please fix this");
-            return TextureGroups[0];
+                throw new Exception("TpageAlign.TextureGroups is empty.\n\nTpageAlign.Init() was not run, or you fucked up so badly that this data.win has no texture groups.");
+            return TextureGroups.ByName("default") ?? TextureGroups[0];
         }
-        public static UndertaleTextureGroupInfo TextureFor(UndertaleNamedResource source)
-        {
-            return _align.GetValueOrDefault(source.Name.Content);
-        }
-        public static UndertaleTextureGroupInfo TextureForOrDefault(UndertaleNamedResource source)
-        {
-            return TextureFor(source) ?? DefaultGroup();
-        }
+		public static UndertaleTextureGroupInfo TextureFor(UndertaleNamedResource source) => _align.GetValueOrDefault(source.Name.Content);
+		public static UndertaleTextureGroupInfo TextureForOrDefault(UndertaleNamedResource source) => TextureFor(source) ?? DefaultGroup();
         public static bool IsSeparateTexture(UndertaleSprite sprite)
         {
-            if (sprite.Textures.Count == 0)
+            if (sprite is null || sprite.Textures.Count == 0 || sprite.Textures[0].Texture is null)
                 return false;
 
 			// Texture pages aren't usually added to _align, unless there's no sprites.

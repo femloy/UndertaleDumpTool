@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using ImageMagick;
+using ImageMagick.Drawing;
 using UndertaleModLib.Models;
 using UndertaleModLib.Util;
 using static UndertaleModLib.Models.UndertaleSequence;
@@ -75,12 +77,15 @@ namespace UndertaleModTool.ProjectTool.Resources
         public List<GMImageLayer> layers { get; set; } = new();
         public GMNineSliceData nineSlice { get; set; } = null;
 
-        /// <summary>
-        /// Translate an UndertaleTexturePageItem into a frame and add it
-        /// </summary>
-        /// <param name="texture"></param>
-        /// <param name="index"></param>
-        public void AddFrameFrom(UndertaleTexturePageItem texture, int index)
+		private int BboxWidth => bbox_right - bbox_left + 1;
+		private int BboxHeight => bbox_bottom - bbox_top + 1;
+
+		/// <summary>
+		/// Translate an UndertaleTexturePageItem into a frame and add it
+		/// </summary>
+		/// <param name="texture"></param>
+		/// <param name="index"></param>
+		public void AddFrameFrom(UndertaleTexturePageItem texture, int index)
         {
             if (_framesTrack == null)
             {
@@ -99,7 +104,42 @@ namespace UndertaleModTool.ProjectTool.Resources
             keyframeHolder.Channels.Add("0", keyframe);
             _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
 
-            IMagickImage<byte> image = Dump.TexWorker.GetTextureFor(texture, $"{name}_{index}.png", true);
+			if (File.Exists(Dump.RelativePath($"sprites/{name}/{frameGuid}.png")))
+				return;
+
+			IMagickImage<byte> image;
+			if (texture is null)
+			{
+				if (Dump.Options.sprite_missing_texture)
+				{
+					// source missing texture
+					image = new MagickImage(MagickColors.Black, 2, 2);
+
+					new Drawables()
+						.FillColor(MagickColors.Fuchsia)
+						.Point(0, 0)
+						.Point(1, 1)
+						.Draw(image);
+
+					var resize = new MagickGeometry((uint)BboxWidth, (uint)BboxHeight);
+					resize.IgnoreAspectRatio = true;
+					image.InterpolativeResize(resize, PixelInterpolateMethod.Nearest);
+
+					if (BboxWidth != width || BboxHeight != height)
+					{
+						image.BackgroundColor = MagickColors.Transparent;
+
+						var canvas = new MagickGeometry(-bbox_left, -bbox_top, width, height);
+						canvas.IgnoreAspectRatio = true;
+						image.Extent(canvas);
+					}
+				}
+				else // user is no fun >:/
+					image = new MagickImage(MagickColors.Transparent, width, height);
+			}
+			else
+				image = Dump.TexWorker.GetTextureFor(texture, $"{name}_{index}.png", true);
+
             _imageFiles.Add($"{frameGuid}", image);
             _imageFiles.Add($"layers/{frameGuid}/{layers[0].name}", image);
         }
@@ -114,6 +154,8 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// <returns></returns>
         public GMSprite(UndertaleSprite source) : base()
         {
+			if (source == null) return;
+
             name = source.Name.Content;
             (width, height) = (source.Width, source.Height);
             nineSlice = GMNineSliceData.From(source.V3NineSlice);
@@ -121,7 +163,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (Dump.Options.asset_texturegroups)
 			{
 				For3D = TpageAlign.IsSeparateTexture(source);
-				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).Name.Content);
+				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).GetName());
 			}
 
 			#region Sprite origin
@@ -156,15 +198,66 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             if (source.SepMasks == UndertaleSprite.SepMaskType.Precise)
             {
-                if (source.CollisionMasks.Count > 1)
-                    collisionKind = CollisionKind.PrecisePerFrame;
-                else
+                if (source.CollisionMasks.Count == 1)
                 {
                     collisionKind = CollisionKind.Precise;
 
-                    // TODO: could be diamond or ellipse
+					// Call me fucking insane: Figure out circle and diamond collision kinds
+					if (Dump.Options.sprite_shaped_masks && ((bbox_right - bbox_left) > 3) && ((bbox_bottom - bbox_top) > 3))
+					{
+						(int maskWidth, int maskHeight) = source.CalculateMaskDimensions(Dump.Data);
+						IMagickImage<byte> maskImage = TextureWorker.GetCollisionMaskImage(source.CollisionMasks[0], maskWidth, maskHeight);
+						IPixelCollection<byte> pixels = maskImage.GetPixels();
+
+						// Ellipse
+						MagickImage circleImage = new(MagickColors.Black, (uint)maskWidth, (uint)maskHeight);
+
+						float centerH = (bbox_left + (bbox_right - 1)) / 2f;
+						float centerV = (bbox_top + (bbox_bottom - 1)) / 2f;
+						float radiusH = ((bbox_right - 1) - bbox_left) / 2f + 0.1f;
+						float radiusV = ((bbox_bottom - 1) - bbox_top) / 2f + 0.1f;
+
+						new Drawables()
+							.DisableStrokeAntialias()
+							.FillColor(MagickColors.White)
+							.Ellipse(centerH, centerV, radiusH, radiusV, 0, 360)
+							.Draw(circleImage);
+
+						double similarity = 1 - maskImage.Compare(circleImage, ErrorMetric.MeanAbsolute);
+						if (similarity >= Dump.Options.sprite_shaped_mask_precision)
+						{
+							collisionKind = CollisionKind.Ellipse;
+							goto DoneEarly;
+						}
+
+						// Diamond
+						MagickImage diamondImage = new(MagickColors.Black, (uint)maskWidth, (uint)maskHeight);
+
+						new Drawables()
+							.DisableStrokeAntialias()
+							.FillColor(MagickColors.White)
+							.Polygon(
+								new PointD(centerH, bbox_top + 0.1),
+								new PointD(bbox_left + 0.1, centerV),
+								new PointD(centerH, bbox_bottom - 1.1),
+								new PointD(bbox_right - 1.1, centerV)
+							)
+							.Draw(diamondImage);
+
+						similarity = 1 - maskImage.Compare(diamondImage, ErrorMetric.MeanAbsolute);
+						if (similarity >= Dump.Options.sprite_shaped_mask_precision)
+							collisionKind = CollisionKind.Diamond;
+
+						diamondImage.Dispose();
+
+					DoneEarly:
+						circleImage.Dispose();
+						maskImage.Dispose();
+					}
                 }
-            }
+				else if (source.CollisionMasks.Count > 1)
+					collisionKind = CollisionKind.PrecisePerFrame;
+			}
             else if (source.SepMasks == UndertaleSprite.SepMaskType.RotatedRect)
                 collisionKind = CollisionKind.RotatedRectangle;
 
@@ -185,6 +278,14 @@ namespace UndertaleModTool.ProjectTool.Resources
             for (var i = 0; i < source.Textures.Count; ++i)
             {
                 UndertaleTexturePageItem texture = source.Textures[i].Texture;
+				if (texture is null)
+				{
+					TpageAlign.ConsoleGroup = true;
+					textureGroupId.SetName(TpageAlign.CONSOLE_GROUP_NAME);
+
+					if (!Dump.Options.sprite_missing_texture)
+						bboxMode = BboxMode.Manual;
+				}
                 AddFrameFrom(texture, i);
             }
 

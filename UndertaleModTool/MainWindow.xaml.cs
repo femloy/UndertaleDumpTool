@@ -3791,8 +3791,6 @@ result in loss of work.");
 
 		public void DumpEnd()
 		{
-			SetUMTConsoleText("");
-
 			Dump.Dispose();
 			Dump = null;
 

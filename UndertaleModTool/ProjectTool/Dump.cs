@@ -26,16 +26,13 @@ namespace UndertaleModTool.ProjectTool
         TextureWorker _worker = new();
 		private GMProject _project = new();
 
-
         public async Task Start()
         {
-			MainWindow.StartProgressBarUpdater();
-
 			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
 				TpageAlign.Init();
 
 			if (Options.asset_project)
-				_project = new GMProject(Data).Save();
+				_project = new GMProject(Data);
 
 			if (Options.asset_options)
 			{
@@ -55,19 +52,14 @@ namespace UndertaleModTool.ProjectTool
 				await Task.Run(() => Parallel.ForEach(Data.Sprites, (sprite) =>
 				{
 					Log($"{sprite.Name.Content}");		// Progress bars are still as unreliable and undocumented as ever
-					//new GMSprite(sprite).Save();
+					new GMSprite(sprite).Save();
 					MainWindow.IncrementProgressParallel();
 				}));
 			}
 
-			await MainWindow.StopProgressBarUpdater();	// You know I wrote this to look better than the old one...
-			MainWindow.HideProgressBar();
-
-			bool openInExplorer = YesNoQuestion("Done. Open folder?");
-			if (openInExplorer)
-				OpenInExplorer();
-
-			MainWindow.DumpEnd();
+			if (TpageAlign.ConsoleGroup)
+				_project.TextureGroups.Add(new GMTextureGroup() { name = TpageAlign.CONSOLE_GROUP_NAME, targets = GMTarget.None });
+			_project.Save();
 		}
 
         public void Dispose()
