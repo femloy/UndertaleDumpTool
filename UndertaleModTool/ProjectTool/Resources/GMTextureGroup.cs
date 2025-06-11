@@ -104,7 +104,9 @@ namespace UndertaleModTool.ProjectTool.Resources
         public static void Init()
         {
             _align.Clear();
-            foreach (var tpage in Dump.Data.TextureGroupInfo)
+			TextureGroups.Clear();
+
+			foreach (var tpage in Dump.Data.TextureGroupInfo)
             {
                 if (!tpage.Name.Content.Contains("_yyg_auto_gen_tex_group_name_"))
                     TextureGroups.Add(tpage);

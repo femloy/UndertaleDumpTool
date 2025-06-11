@@ -31,6 +31,9 @@ namespace UndertaleModTool.ProjectTool
         {
 			MainWindow.StartProgressBarUpdater();
 
+			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
+				TpageAlign.Init();
+
 			if (Options.asset_project)
 				_project = new GMProject(Data).Save();
 
@@ -44,9 +47,6 @@ namespace UndertaleModTool.ProjectTool
 					// TODO
 				}
 			}
-
-			if (Options.asset_texturegroups)
-				TpageAlign.Init();
 
 			if (Options.asset_sprites)
 			{
