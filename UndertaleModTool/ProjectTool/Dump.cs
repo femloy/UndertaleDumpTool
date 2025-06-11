@@ -26,6 +26,8 @@ namespace UndertaleModTool.ProjectTool
         TextureWorker _worker = new();
 		private GMProject _project = new();
 
+		// Hey burnedpopcorn stop stealing my shit thanks bro
+
         public async Task Start()
         {
 			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
