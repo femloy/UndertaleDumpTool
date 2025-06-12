@@ -43,6 +43,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 				mipsToGenerate = source.TexturePages[0].Resource.GeneratedMips;
 				isScaled = source.TexturePages[0].Resource.Scaled == 1; // "i think this is wrong?" thanks utmt devs.
 
+				if (source.LoadType != UndertaleTextureGroupInfo.TextureGroupLoadType.InFile)
+				{
+					directory = source.Directory.Content;
+					loadType = "dynamicpages";
+				}
+
 				// Format ones
 				if (texData.FormatBZ2)
 					compressFormat = "bz2";
@@ -88,8 +94,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 					}
 				}
 			}
-
-			// TODO: loadType, directory
 		}
 	}
 
