@@ -20,39 +20,28 @@ namespace UndertaleModTool.ProjectTool
     /// </summary>
     public partial class DumpWindow : Window
     {
-        Dump Dump;
 		MainWindow MainWindow = Application.Current.MainWindow as MainWindow;
+		bool endDumpOnClose = true;
 
-        public DumpWindow(Dump dump)
+        public DumpWindow()
         {
             InitializeComponent();
-            Dump = dump;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-			// TEMPORARY
-			Dump.Options.data_filename = Dump.MainWindow.FilePath;
-			_ = Start();
+			DataContext = Dump.Options;
         }
 
         private async Task Start()
         {
-            Dump.BasePath = MainWindow.PromptChooseDirectory();
-            if (Dump.BasePath == null)
-            {
-                Close();
-				MainWindow.DumpEnd();
-				Dump.Log("Canceled");
+            Dump.Current.BasePath = MainWindow.PromptChooseDirectory();
+            if (Dump.Current.BasePath == null)
 				return;
-            }
 
+			endDumpOnClose = false;
 			Close();
 			MainWindow.StartProgressBarUpdater();
 
 			try
 			{
-				await Task.Run(() => Dump.Start());
+				await Task.Run(() => Dump.Current.Start());
 
 				MainWindow.SetUMTConsoleText("");
 
@@ -71,5 +60,17 @@ namespace UndertaleModTool.ProjectTool
 
 			MainWindow.DumpEnd();
 		}
-    }
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			if (endDumpOnClose)
+				MainWindow.DumpEnd();
+		}
+
+		private void StartButton_Click(object sender, RoutedEventArgs e)
+		{
+			_ = Start();
+		}
+	}
 }

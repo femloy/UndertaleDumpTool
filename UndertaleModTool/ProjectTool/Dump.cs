@@ -21,10 +21,18 @@ namespace UndertaleModTool.ProjectTool
 {
     public partial class Dump
     {
+		public const uint BuildNumber = 0;
+
         public string BasePath;
-		private DumpOptions _options = new();
+		private DumpOptions _options;
         TextureWorker _worker = new();
 		private GMProject _project = new();
+
+		public Dump(MainWindow theWindowInQuestion)
+		{
+			MainWindow = theWindowInQuestion;
+			_options = new();
+		}
 
 		// Hey burnedpopcorn stop stealing my shit thanks bro
 

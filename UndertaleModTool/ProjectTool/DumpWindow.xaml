@@ -1,29 +1,37 @@
-﻿<Window x:Class="UndertaleModTool.ProjectTool.DumpWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UndertaleModTool.ProjectTool"
+        xmlns:UndertaleModTool="clr-namespace:UndertaleModTool" x:Class="UndertaleModTool.ProjectTool.DumpWindow"
         mc:Ignorable="d"
         Title="Project Tool" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        Loaded="Window_Loaded">
-    <Grid>
-        <Label RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold">
-			<TextBlock TextAlignment="Center">
-				Warning: This is meant for UNDERTALE and DELTARUNE, and nothing else.
-				<LineBreak/>
-				Decompiling with UTMT is unreliable for most other cases including mods.
-				<LineBreak/>
-				<LineBreak/>
-				Also I'm still working on this.
-			</TextBlock>
+        ResizeMode="NoResize">
+	<Grid>
+		<Label RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold">
 			<Label.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="0" Y="8"/>
-                </TransformGroup>
-            </Label.RenderTransform>
-        </Label>
-    </Grid>
+				<TransformGroup>
+					<TranslateTransform X="0" Y="8"/>
+				</TransformGroup>
+			</Label.RenderTransform>
+			<TextBlock TextAlignment="Center"><Run Text="Warning: This is meant for UNDERTALE and DELTARUNE, and nothing else."/><LineBreak/><Run Text="Decompiling with UTMT is unreliable for most other cases including mods."/></TextBlock>
+		</Label>
+		<Grid Margin="32,64,32,96">
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
+			<UndertaleModTool:ButtonDark Content="Sprites" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4"/>
+			<CheckBox Content="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sprites, Mode=TwoWay}"/>
+		</Grid>
+		<UndertaleModTool:ButtonDark Content="Do that" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Padding="24,4,24,4" FontSize="24" Margin="0,0,0,16" Click="StartButton_Click"/>
+	</Grid>
 </Window>

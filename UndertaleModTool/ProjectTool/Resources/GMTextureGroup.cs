@@ -71,10 +71,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 					{
 						if (doBorder)
 						{
-							items.RemoveAll(i => i.BoundingWidth == i.TexturePage.TextureData.Width); // No fonts. They fuck it up
-
-							items.Sort((x, y) => x.SourceX.CompareTo(y.SourceX)); // Get the left-most item in this texture page
-							border = items[0].SourceX; // Its position on the texture *should* in theory be the border size
+							items.Sort((x, y) => x.SourceY.CompareTo(y.SourceY)); // Get the top-most item in this texture page
+							border = items[0].SourceY; // Its position on the texture *should* in theory be the border size
 							doBorder = false;
 						}
 

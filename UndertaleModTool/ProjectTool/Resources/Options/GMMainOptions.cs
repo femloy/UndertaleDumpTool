@@ -37,7 +37,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 		/// <param name="source"></param>
 		public GMMainOptions(UndertaleData source) : this()
 		{
-			// TODO
+			option_gameguid = new Guid(source.GeneralInfo.GMS2GameGUID).ToString();
 		}
 
 		public GMMainOptions Save()
