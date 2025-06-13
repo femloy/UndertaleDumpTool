@@ -1,4 +1,4 @@
-name: Publish continuous release of UndertaleModTool
+name: Publish bleeding edge
 
 on:
   push:
