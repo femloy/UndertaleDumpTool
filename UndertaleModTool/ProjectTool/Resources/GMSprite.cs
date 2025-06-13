@@ -104,7 +104,7 @@ namespace UndertaleModTool.ProjectTool.Resources
             keyframeHolder.Channels.Add("0", keyframe);
             _framesTrack.keyframes.Keyframes.Add(keyframeHolder);
 
-			if (File.Exists(Dump.RelativePath($"sprites/{name}/{frameGuid}.png")))
+			if (Dump.Options.sprite_skip_existing && File.Exists(Dump.RelativePath($"sprites/{name}/{frameGuid}.png")))
 				return;
 
 			IMagickImage<byte> image;

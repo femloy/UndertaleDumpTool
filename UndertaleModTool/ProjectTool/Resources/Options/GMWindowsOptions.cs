@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using UndertaleModLib;
 using UndertaleModTool.ProjectTool.Resources.Options;
+using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 {
@@ -58,17 +62,68 @@ namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 		public bool option_windows_disable_sandbox { get; set; } = false;
 		public bool option_windows_steam_use_alternative_launcher { get; set; } = false;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="source"></param>
 		public GMWindowsOptions(UndertaleData source) : this()
 		{
-			// TODO
+			option_windows_display_name = source.GeneralInfo.DisplayName.Content;
+
+			if (Files.PROGRAM_EXE != null)
+			{
+				option_windows_executable_name = Files.PROGRAM_EXE.NameExt.Replace(source.GeneralInfo.Name.Content, "${project_name}");
+
+				var info = FileVersionInfo.GetVersionInfo(Files.PROGRAM_EXE.FullPath);
+				option_windows_version = info.FileVersion ?? option_windows_version;
+				option_windows_company_info = info.CompanyName ?? option_windows_company_info;
+				option_windows_product_info = info.ProductName ?? option_windows_product_info;
+				option_windows_copyright_info = info.LegalCopyright ?? option_windows_copyright_info;
+				option_windows_description_info = info.FileDescription ?? option_windows_description_info;
+
+				// TODO: exe icon
+			}
+
+			// Options flags (DEFAULT): UseNewAudio, ShowCursor, VariableErrors
+			// Options flags (INVERSE): FullScreen, InterpolatePixels, UseNewAudio, Sizeable, ScreenKey, VariableErrors, FastCollisionCompatibility, DisableSandbox, EnableCopyOnWrite
+			// Generalinfo flags (DEFAULT): Scale, ShowCursor
+			// Generalinfo flags (INVERSE): Fullscreen, SyncVertex1, Interpolate, Sizeable, ScreenKey, LocalDataEnabled, BorderlessWindow
+
+			option_windows_display_cursor = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.ShowCursor);
+			
+			if (!source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.LocalDataEnabled)) // This is the opposite...?
+				option_windows_save_location = SaveLocation.LocalAppData;
+
+			if (Files.SPLASH_PNG != null)
+			{
+				option_windows_use_splash = true;
+				option_windows_splash_screen = "splash/splash.png";
+			}
+
+			option_windows_start_fullscreen = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.Fullscreen);
+			option_windows_allow_fullscreen_switching = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.ScreenKey); // "???" thanks again utmt devs
+			option_windows_interpolate_pixels = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.Interpolate);
+			option_windows_vsync = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.SyncVertex1) || source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.SyncVertex2);
+			option_windows_resize_window = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.Sizeable);
+			option_windows_borderless = source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.BorderlessWindow);
+
+			if (!source.GeneralInfo.Info.HasFlag(UndertaleGeneralInfo.InfoFlags.Scale))
+				option_windows_scale = Scaling.FullScale;
+
+			option_windows_sleep_margin = Constants.SLEEP_MARGIN;
+			option_windows_texture_page = $"{TpageAlign.TexturePageSize}x{TpageAlign.TexturePageSize}";
+			option_windows_disable_sandbox = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.DisableSandbox);
 		}
 
 		public GMWindowsOptions Save()
 		{
+			string path = Dump.RelativePath("options/windows");
+
+			Directory.CreateDirectory(path);
+			Dump.ToJsonFile($"{path}/options_windows.yy", this);
+
+			if (Files.SPLASH_PNG != null)
+			{
+				Directory.CreateDirectory($"{path}/splash");
+				File.Copy(Files.SPLASH_PNG.FullPath, $"{path}/splash/splash.png");
+			}
+
 			return this;
 		}
 	}

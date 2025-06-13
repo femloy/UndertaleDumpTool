@@ -105,34 +105,51 @@ namespace UndertaleModTool.ProjectTool.Resources
         private static Dictionary<string, UndertaleTextureGroupInfo> _align = new();
         public static List<UndertaleTextureGroupInfo> TextureGroups = new();
 
-        public static void Init()
-        {
-            _align.Clear();
+		public static void Clear()
+		{
+			_align.Clear();
 			TextureGroups.Clear();
 			ConsoleGroup = false;
-
-			// Align
-			foreach (var tpage in Dump.Data.TextureGroupInfo)
+			TexturePageSize = 2048;
+		}
+        public static void Init()
+        {
+			foreach (var source in Dump.Data.TextureGroupInfo)
             {
-                if (!tpage.Name.Content.Contains("_yyg_auto_gen_tex_group_name_"))
-                    TextureGroups.Add(tpage);
+				// 3D sprites aka separate texture pages (see IsSeparateTexture() below)
+				bool addPages = source.Sprites.Count == 0 && source.SpineSprites.Count == 0 && source.Fonts.Count == 0 && source.Tilesets.Count == 0;
+				if (source.Name.Content.Contains("_yyg_auto_gen_tex_group_name_") && addPages && source.TexturePages.Count > 0)
+				{
+					foreach (var i in source.TexturePages)
+						_align.Add(i.Resource.Name.Content, source);
+					continue;
+				}
 
-                foreach (var i in tpage.Sprites)
-                    _align.Add(i.Resource.Name.Content, tpage);
-                foreach (var i in tpage.Fonts)
-                    _align.Add(i.Resource.Name.Content, tpage);
+				// Default or userdefined groups
+				TextureGroups.Add(source);
+				if (source.TexturePages.Count == 0)
+					continue;
 
-				// If there's no sprites, then add the texture pages instead (look at IsSeparateTexture() below)
-				if (tpage.Sprites.Count == 0)
-                {
-                    foreach (var i in tpage.TexturePages)
-                        _align.Add(i.Resource.Name.Content, tpage);
-                }
+                foreach (var i in source.Sprites)
+                    _align.Add(i.Resource.Name.Content, source);
+                foreach (var i in source.Fonts)
+                    _align.Add(i.Resource.Name.Content, source);
+				foreach (var i in source.Tilesets)
+					_align.Add(i.Resource.Name.Content, source);
+
+				// Exclude external textures (.yytex and such) from included files
+				if (source.TexturePages[0].Resource.TextureExternal)
+				{
+					foreach (var i in source.TexturePages)
+					{
+						var dumpFile = Files.ByName($"{source.Name.Content}_{i.Resource.IndexInGroup}");
+						if (dumpFile is not null)
+							dumpFile.Included = false;
+					}
+				}
             }
 
-			// Texture page size
 			TexturePageSize = 256;
-
 			foreach (var tpage in Dump.Data.EmbeddedTextures)
 			{
 				var size = Math.Max(tpage.TextureData.Width, tpage.TextureData.Height);
@@ -141,6 +158,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
         }
 
+		/// <summary>
+		/// Define the maximum texture page size now for options later
+		/// </summary>
 		public static int TexturePageSize = 2048;
 
 		/// <summary>
@@ -182,5 +202,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             return false;
         }
+		public static Dictionary<string, UndertaleTextureGroupInfo> Get3DTextures() => _align.Where(i => Dump.Data.EmbeddedTextures.ByName(i.Key) is not null).ToList().ToDictionary();
     }
 }

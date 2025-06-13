@@ -42,7 +42,10 @@ namespace UndertaleModTool.ProjectTool
 			// WIP.
             StringBuilder sb = new();
 			Stack<bool> depth = new();
+
 			bool isObject = false;
+			bool escapeNextChar = false;
+			bool isString = false;
 
             for (var _ = 0; _ < json.Length; _++)
             {
@@ -57,7 +60,22 @@ namespace UndertaleModTool.ProjectTool
 
                 switch (c)
                 {
+					case '\\':
+						escapeNextChar = !escapeNextChar;
+						sb.Append(c);
+						break;
+
+					case '\"':
+						if (escapeNextChar)
+							break;
+						isString = !isString;
+						sb.Append(c);
+						break;
+
                     case '{':
+						if (isString)
+							goto default;
+
 						sb.Append(c);
 						depth.Push(isObject);
 						if (depth.Count <= flatDepth)
@@ -71,6 +89,9 @@ namespace UndertaleModTool.ProjectTool
 						break;
 
                     case '}':
+						if (isString)
+							goto default;
+
 						if (prevC != '{')
 						{
 							sb.Append(',');
@@ -82,6 +103,9 @@ namespace UndertaleModTool.ProjectTool
 						break;
 
 					case '[':
+						if (isString)
+							goto default;
+
 						sb.Append(c);
 						depth.Push(isObject);
 						isObject = false;
@@ -90,6 +114,9 @@ namespace UndertaleModTool.ProjectTool
 						break;
 
 					case ']':
+						if (isString)
+							goto default;
+
 						if (prevC != '[')
 						{
 							sb.Append(',');
@@ -100,12 +127,18 @@ namespace UndertaleModTool.ProjectTool
 						break;
 
                     case ':':
+						if (isString)
+							goto default;
+
 						sb.Append(c);
 						if (!isObject)
 							sb.Append(' ');
 						break;
 
 					case ',':
+						if (isString)
+							goto default;
+
 						sb.Append(c);
 						if (!isObject)
 							sb.YYIndent(depth.Count);
@@ -115,6 +148,9 @@ namespace UndertaleModTool.ProjectTool
 						sb.Append(c);
 						break;
                 }
+
+				if (c != '\\')
+					escapeNextChar = false;
 			}
 
             return sb.ToString();

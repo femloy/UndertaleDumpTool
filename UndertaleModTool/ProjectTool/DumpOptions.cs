@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace UndertaleModTool.ProjectTool
     {
 		public bool asset_project { get; set; } = true;
 		public bool asset_sprites { get; set; } = true;
-		public bool asset_rooms { get; set; } = false; // TODO
+		public bool asset_rooms { get; set; } = false; // TODO yes we know you don't have to put todo everywhere. what was i thinking
 		public bool asset_texturegroups { get; set; } = true;
 		public bool asset_audiogroups { get; set; } = true;
 		public bool asset_includedfiles { get; set; } = true;
@@ -24,6 +25,8 @@ namespace UndertaleModTool.ProjectTool
 		public bool sprite_skip_existing { get; set; } = true; // Skip already dumped frames
 		
 		public string data_filename { get; set; } = Dump.MainWindow.FilePath; // .../DumpTest/data.win
+		public string data_filedir => Path.GetDirectoryName(data_filename); // .../DumpTest
+		public bool data_do_exe { get; set; } = true;
 
 		public bool options_other_platforms { get; set; } = false; // Sets up matching settings for every platform other than Windows (no consoles)
 

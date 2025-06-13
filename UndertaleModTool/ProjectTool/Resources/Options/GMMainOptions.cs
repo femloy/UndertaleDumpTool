@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UndertaleModLib;
+using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources.Options
 {
@@ -31,17 +33,34 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 		public string option_template_icon { get; set; } = "${base_options_dir}/main/template_icon.png";
 		public string option_template_description { get; set; } = null;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="source"></param>
 		public GMMainOptions(UndertaleData source) : this()
 		{
 			option_gameguid = new Guid(source.GeneralInfo.GMS2GameGUID).ToString();
+			option_game_speed = (int)source.GeneralInfo.GMS2FPS; // Why is this a float???
+
+			foreach (var i in TpageAlign.Get3DTextures())
+			{
+				if (i.Value.TexturePages.Count == 0)
+					continue;
+				if (i.Value.TexturePages[0].Resource.GeneratedMips > 0)
+				{
+					option_mips_for_3d_textures = true;
+					break;
+				}
+			}
+
+			option_draw_colour = Constants.DRAW_COLOUR;
+			option_window_colour = source.Options.WindowColor;
+			option_author = "Lila's dumpy";
+
+			option_collision_compatibility = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.FastCollisionCompatibility);
+			option_copy_on_write_enabled = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.EnableCopyOnWrite);
 		}
 
 		public GMMainOptions Save()
 		{
+			Directory.CreateDirectory(Dump.RelativePath("options/main"));
+			Dump.ToJsonFile(Dump.RelativePath("options/main/options_main.yy"), this);
 			return this;
 		}
 	}

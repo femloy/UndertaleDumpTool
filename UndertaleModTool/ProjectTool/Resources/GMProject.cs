@@ -82,7 +82,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public List<GMFolder> Folders { get; set; } = new();
 		public List<GMAudioGroup> AudioGroups { get; set; } = new();
 		public List<GMTextureGroup> TextureGroups { get; set; } = new();
-		public List<IdPath> IncludedFiles { get; set; } = new();
+		public List<GMIncludedFile> IncludedFiles { get; set; } = new();
 		public MetaDataClass MetaData { get; set; } = new();
 
 		/// <summary>
@@ -101,8 +101,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 		}
 		private uint _resourceOrder = 0;
 		private string _previousResourceFolder = "";
-
-		private List<string> _detectedDatafiles = new();
 
 		/// <summary>
 		/// Create GMProject out of UndertaleData
@@ -199,9 +197,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
 
 			#endregion
+		}
 
-			// TODO datafiles
-
+		public void AddIncludedFiles()
+		{
+			foreach (var source in Files.FileList.Where(i => i.Included))
+				IncludedFiles.Add(new GMIncludedFile(source));
 		}
 
 		public GMProject Save()
@@ -242,5 +243,29 @@ namespace UndertaleModTool.ProjectTool.Resources
 	{
 		public GMTarget CopyToMask { get; set; } = GMTarget.AllIncludedFile;
 		public string filePath { get; set; } = "datafiles";
+
+		public GMIncludedFile(Files.DumpFile source)
+		{
+			name = source.NameExt;
+			filePath = source.RelativeDirectory;
+
+			if (filePath != "")
+				filePath = "datafiles/" + filePath;
+			else
+				filePath = "datafiles";
+
+			switch (source.Extension.ToLower())
+			{
+				case ".dll":
+					CopyToMask = GMTarget.Windows | GMTarget.Xbox;
+					break;
+				case ".dylib":
+					CopyToMask = GMTarget.macOS;
+					break;
+				case ".so":
+					CopyToMask = GMTarget.Ubuntu;
+					break;
+			}
+		}
 	}
 }

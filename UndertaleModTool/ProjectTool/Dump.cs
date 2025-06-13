@@ -38,8 +38,14 @@ namespace UndertaleModTool.ProjectTool
 
         public async Task Start()
         {
+			Files.Init();
+			Constants.Init();
+			TpageAlign.Clear();
+
 			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
 				TpageAlign.Init();
+
+			#region Dump Resources
 
 			if (Options.asset_project)
 				_project = new GMProject(Data);
@@ -67,8 +73,14 @@ namespace UndertaleModTool.ProjectTool
 				}));
 			}
 
+			#endregion
+
 			if (TpageAlign.ConsoleGroup)
 				_project.TextureGroups.Add(new GMTextureGroup() { name = TpageAlign.CONSOLE_GROUP_NAME, targets = GMTarget.None });
+
+			_project.AddIncludedFiles();
+			Files.Save();
+
 			_project.Save();
 		}
 
