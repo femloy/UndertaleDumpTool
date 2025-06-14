@@ -205,10 +205,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 				IncludedFiles.Add(new GMIncludedFile(source));
 		}
 
-		public GMProject Save()
+		public void Save(string rootFolder = null)
 		{
-			Dump.ToJsonFile(Dump.RelativePath($"{name}.yyp"), this);
-			return this;
+			if (rootFolder == null)
+				rootFolder = Dump.RelativePath("");
+
+			Dump.ToJsonFile(rootFolder + $"/{name}.yyp", this);
 		}
 	}
 

@@ -13,7 +13,7 @@ using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 {
-	public class GMWindowsOptions : ResourceBase
+	public class GMWindowsOptions : ResourceBase, ISaveable
 	{
 		public GMWindowsOptions()
 		{
@@ -111,20 +111,19 @@ namespace UndertaleModTool.ProjectTool.Resources.GMOptions
 			option_windows_disable_sandbox = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.DisableSandbox);
 		}
 
-		public GMWindowsOptions Save()
+		public void Save(string rootFolder = null)
 		{
-			string path = Dump.RelativePath("options/windows");
+			if (rootFolder == null)
+				rootFolder = Dump.RelativePath("options/windows");
 
-			Directory.CreateDirectory(path);
-			Dump.ToJsonFile($"{path}/options_windows.yy", this);
+			Directory.CreateDirectory(rootFolder);
+			Dump.ToJsonFile($"{rootFolder}/options_windows.yy", this);
 
 			if (Files.SPLASH_PNG != null)
 			{
-				Directory.CreateDirectory($"{path}/splash");
-				File.Copy(Files.SPLASH_PNG.FullPath, $"{path}/splash/splash.png");
+				Directory.CreateDirectory($"{rootFolder}/splash");
+				File.Copy(Files.SPLASH_PNG.FullPath, $"{rootFolder}/splash/splash.png");
 			}
-
-			return this;
 		}
 	}
 }

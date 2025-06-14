@@ -13,7 +13,7 @@ using static UndertaleModLib.Models.UndertaleSequence;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
-    public class GMSprite : ResourceBase
+    public class GMSprite : ResourceBase, ISaveable
     {
         public enum BboxMode
         {
@@ -158,7 +158,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             name = source.Name.Content;
             (width, height) = (source.Width, source.Height);
-            nineSlice = GMNineSliceData.From(source.V3NineSlice);
+
+			if (source.V3NineSlice != null)
+				nineSlice = new GMNineSliceData(source.V3NineSlice);
 
 			if (Dump.Options.asset_texturegroups)
 			{
@@ -298,7 +300,7 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// Saves the sprite into GameMaker project format
         /// </summary>
         /// <param name="spriteFolder">The folder that will contain this one sprite's files (not the sprites folder)</param>
-        public GMSprite Save(string spriteFolder = null)
+        public void Save(string spriteFolder = null)
         {
             if (spriteFolder == null)
                 spriteFolder = $"sprites/{name}/";
@@ -316,8 +318,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 				Directory.CreateDirectory(Path.GetDirectoryName(path));
 				TextureWorker.SaveImageToFile(i.Value, path + ".png");
             }
-
-            return this;
         }
     }
     public class GMSpriteFrame : ResourceBase
@@ -377,21 +377,15 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static GMNineSliceData From(UndertaleSprite.NineSlice source)
+        public GMNineSliceData(UndertaleSprite.NineSlice source)
         {
-            if (source == null) return null;
-
-            GMNineSliceData target = new();
-
-            target.left = source.Left;
-            target.top = source.Top;
-            target.right = source.Right;
-            target.bottom = source.Bottom;
-            target.enabled = source.Enabled;
+            left = source.Left;
+            top = source.Top;
+            right = source.Right;
+            bottom = source.Bottom;
+            enabled = source.Enabled;
             for (int i = 0; i < 5; i++)
-                target.tileMode[i] = (TileMode)source.TileModes[i];
-
-            return target;
+                tileMode[i] = (TileMode)source.TileModes[i];
         }
     }
 }

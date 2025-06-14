@@ -44,6 +44,9 @@ namespace UndertaleModTool.ProjectTool
         public static void Error(string message) => MainWindow.ScriptError(message);
 		public static bool YesNoQuestion(string message) => MainWindow.ScriptQuestion(message);
 		public static void Log(string message) => MainWindow.SetUMTConsoleText(message);
+		public static void SetupProgress(string current, double maxValue) => MainWindow.SetProgressBar(null, current, 0, maxValue);
+		public static void UpdateStatus(string status) => Log(status);
+		public static void IncrementProgress() => MainWindow.IncrementProgressParallel();
 		public static void OpenInExplorer() => Process.Start("explorer.exe", Current.BasePath.Replace('/', '\\'));
         public static UndertaleData Data => MainWindow.Data;
     }

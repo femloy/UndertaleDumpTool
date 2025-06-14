@@ -11,6 +11,7 @@ namespace UndertaleModTool.ProjectTool
     {
 		public bool asset_project { get; set; } = true;
 		public bool asset_sprites { get; set; } = true;
+		public bool asset_sounds { get; set; } = true;
 		public bool asset_rooms { get; set; } = false; // TODO yes we know you don't have to put todo everywhere. what was i thinking
 		public bool asset_texturegroups { get; set; } = true;
 		public bool asset_audiogroups { get; set; } = true;

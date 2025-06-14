@@ -64,4 +64,9 @@ namespace UndertaleModTool.ProjectTool.Resources
             this.name = name;
         }
     }
+
+	public interface ISaveable
+	{
+		public void Save(string rootFolder = null);
+	}
 }

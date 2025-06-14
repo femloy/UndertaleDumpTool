@@ -21,9 +21,9 @@ namespace UndertaleModTool.ProjectTool
 {
     public partial class Dump
     {
-		public const uint BuildNumber = 0;
+		// Hey burnedpopcorn or other Pizza Tower goons stop stealing my shit thanks bro
 
-        public string BasePath;
+		public string BasePath;
 		private DumpOptions _options;
         TextureWorker _worker = new();
 		private GMProject _project = new();
@@ -34,7 +34,20 @@ namespace UndertaleModTool.ProjectTool
 			_options = new();
 		}
 
-		// Hey burnedpopcorn stop stealing my shit thanks bro
+		public async Task DumpAsset<A, B>(string name, IList<B> list) where A : ISaveable where B : UndertaleNamedResource
+		{
+			SetupProgress(name, list.Count);
+
+			await Task.Run(() => Parallel.ForEach(list, (source) =>
+			{
+				UpdateStatus(source.Name.Content);
+
+				var asset = (A)Activator.CreateInstance(typeof(A), new object[] { source });
+				asset.Save();
+
+				IncrementProgress();
+			}));
+		}
 
         public async Task Start()
         {
@@ -61,17 +74,10 @@ namespace UndertaleModTool.ProjectTool
 				}
 			}
 
+			if (Options.asset_sounds)
+				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
 			if (Options.asset_sprites)
-			{
-				MainWindow.SetProgressBar(null, "Sprites", 0, Data.Sprites.Count);
-
-				await Task.Run(() => Parallel.ForEach(Data.Sprites, (sprite) =>
-				{
-					Log($"{sprite.Name.Content}");		// Progress bars are still as unreliable and undocumented as ever
-					new GMSprite(sprite).Save();
-					MainWindow.IncrementProgressParallel();
-				}));
-			}
+				await DumpAsset<GMSprite, UndertaleSprite>("Sprites", Data.Sprites);
 
 			#endregion
 

@@ -9,7 +9,7 @@ using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources.Options
 {
-	public class GMMainOptions : ResourceBase
+	public class GMMainOptions : ResourceBase, ISaveable
 	{
 		public GMMainOptions()
 		{
@@ -57,11 +57,13 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 			option_copy_on_write_enabled = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.EnableCopyOnWrite);
 		}
 
-		public GMMainOptions Save()
+		public void Save(string rootFolder = null)
 		{
-			Directory.CreateDirectory(Dump.RelativePath("options/main"));
-			Dump.ToJsonFile(Dump.RelativePath("options/main/options_main.yy"), this);
-			return this;
+			if (rootFolder == null)
+				rootFolder = Dump.RelativePath("options/main");
+
+			Directory.CreateDirectory(rootFolder);
+			Dump.ToJsonFile(rootFolder + "/options_main.yy", this);
 		}
 	}
 }
