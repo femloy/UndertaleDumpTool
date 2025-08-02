@@ -21,8 +21,6 @@ namespace UndertaleModTool.ProjectTool
 {
     public partial class Dump
     {
-		// Hey burnedpopcorn or other Pizza Tower goons stop stealing my shit thanks bro
-
 		public string BasePath;
 		private DumpOptions _options;
         TextureWorker _worker = new();
@@ -53,6 +51,7 @@ namespace UndertaleModTool.ProjectTool
         {
 			Files.Init();
 			Constants.Init();
+			GMSound.InitGroupTracking();
 			TpageAlign.Clear();
 
 			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
@@ -81,10 +80,7 @@ namespace UndertaleModTool.ProjectTool
 
 			#endregion
 
-			if (TpageAlign.ConsoleGroup)
-				_project.TextureGroups.Add(new GMTextureGroup() { name = TpageAlign.CONSOLE_GROUP_NAME, targets = GMTarget.None });
-
-			_project.AddIncludedFiles();
+			_project.FinishingTouches();
 			Files.Save();
 
 			_project.Save();

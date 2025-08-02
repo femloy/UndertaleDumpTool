@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UndertaleModLib;
 using UndertaleModLib.Models;
+using static UndertaleModTool.ProjectTool.Resources.GMProject;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -137,25 +138,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 				Folders.Add(new GMFolder(item) { order = Folders.Count });
 
 			#endregion
-			#region Groups
-
-			if (Dump.Options.asset_texturegroups)
-			{
-				foreach (var group in TpageAlign.TextureGroups)
-					TextureGroups.Add(new GMTextureGroup(group));
-			}
-			else
-				TextureGroups.Add(new GMTextureGroup() { name = "Default" });
-
-			if (Dump.Options.asset_audiogroups)
-			{
-				foreach (var group in source.AudioGroups)
-					AudioGroups.Add(new GMAudioGroup(group));
-			}
-			else
-				AudioGroups.Add(new GMAudioGroup() { name = "audiogroup_default" });
-
-			#endregion
 			#region Options
 
 			if (Dump.Options.asset_options)
@@ -199,8 +181,28 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 		}
 
-		public void AddIncludedFiles()
+		public void FinishingTouches()
 		{
+			// Audio/Texture Groups
+			if (Dump.Options.asset_texturegroups)
+			{
+				foreach (var group in TpageAlign.TextureGroups)
+					TextureGroups.Add(new GMTextureGroup(group));
+				if (TpageAlign.ConsoleGroup)
+					TextureGroups.Add(new GMTextureGroup() { name = TpageAlign.CONSOLE_GROUP_NAME, targets = GMTarget.None });
+			}
+			else
+				TextureGroups.Add(new GMTextureGroup() { name = "Default" });
+
+			if (Dump.Options.asset_audiogroups)
+			{
+				foreach (var group in Dump.Data.AudioGroups)
+					AudioGroups.Add(new GMAudioGroup(group));
+			}
+			else
+				AudioGroups.Add(new GMAudioGroup() { name = "audiogroup_default" });
+
+			// Included files
 			foreach (var source in Files.FileList.Where(i => i.Included))
 				IncludedFiles.Add(new GMIncludedFile(source));
 		}
@@ -236,6 +238,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public GMAudioGroup(UndertaleAudioGroup source) : this()
 		{
 			name = source.Name.Content;
+
+			if (!GMSound.UsedAudioGroups.Contains(source.Name.Content))
+				targets = GMTarget.None;
 		}
 
 		public GMTarget targets { get; set; } = GMTarget.All;
