@@ -103,11 +103,19 @@ namespace UndertaleModTool.ProjectTool
 			}
 		}
 
+		public static void InvalidateByFullPath(string path)
+		{
+			var i = ByFullPath(path);
+			if (i is not null)
+				i.Included = false;
+		}
+
 		/// <summary>
 		/// Find an included file by its extensionless name
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static DumpFile ByName(string name) => FileList.FirstOrDefault(i => i.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+		public static DumpFile ByFullPath(string path) => FileList.FirstOrDefault(i => i.FullPath.Equals(path, StringComparison.CurrentCultureIgnoreCase));
 	}
 }

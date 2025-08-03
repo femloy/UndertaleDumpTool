@@ -70,6 +70,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (!File.Exists(groupFilePath))
 				return null;
 
+			Files.InvalidateByFullPath(groupFilePath); // Exclude audiogroup file from included files
+
 			try
 			{
 				UndertaleData data = null;
@@ -122,6 +124,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 				string streamedPath = Path.Combine(Dump.Options.data_filedir, source.File.Content);
 				if (File.Exists(streamedPath))
 					_fileData = File.ReadAllBytes(streamedPath);
+				Files.InvalidateByFullPath(streamedPath); // Exclude streamed sound from included files
 			}
 
 			if (Dump.Options.asset_audiogroups)
