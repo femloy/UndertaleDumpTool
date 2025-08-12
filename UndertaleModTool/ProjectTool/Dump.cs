@@ -73,6 +73,8 @@ namespace UndertaleModTool.ProjectTool
 				}
 			}
 
+			if (Options.asset_shaders)
+				await DumpAsset<GMShader, UndertaleShader>("Shaders", Data.Shaders);
 			if (Options.asset_sounds)
 				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
 			if (Options.asset_sprites)
@@ -80,10 +82,14 @@ namespace UndertaleModTool.ProjectTool
 
 			#endregion
 
-			_project.FinishingTouches();
-			Files.Save();
+			if (Options.asset_project)
+			{
+				_project.FinishingTouches();
+				_project.Save();
+			}
 
-			_project.Save();
+			if (Options.asset_includedfiles)
+				Files.Save();
 		}
 
         public void Dispose()

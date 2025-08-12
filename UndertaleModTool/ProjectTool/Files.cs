@@ -88,9 +88,6 @@ namespace UndertaleModTool.ProjectTool
 
 		public static void Save()
 		{
-			if (!Dump.Options.asset_includedfiles)
-				return;
-
 			string path = Dump.RelativePath("datafiles");
 			Directory.CreateDirectory(path);
 

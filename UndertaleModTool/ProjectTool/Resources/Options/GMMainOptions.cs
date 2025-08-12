@@ -51,7 +51,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 
 			option_draw_colour = Constants.DRAW_COLOUR;
 			option_window_colour = source.Options.WindowColor;
-			option_author = "Lila's dumpy";
+			option_author = "My Dumpy";
 
 			option_collision_compatibility = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.FastCollisionCompatibility);
 			option_copy_on_write_enabled = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.EnableCopyOnWrite);

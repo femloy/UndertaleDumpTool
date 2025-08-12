@@ -104,10 +104,10 @@ namespace UndertaleModTool.ProjectTool.Resources
 			parent = new IdPath("Sounds", "folders/Sounds.yy");
 			soundFile = source.File.Content;
 
-			if (source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsCompressed))
-				compression = Compression.Compressed;
-			else if (source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsDecompressedOnLoad))
+			if (source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsDecompressedOnLoad))
 				compression = Compression.UncompressOnLoad;
+			else if (source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsCompressed))
+				compression = Compression.Compressed;
 			else if (!source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsEmbedded))
 				compression = Compression.Streamed;
 

@@ -166,6 +166,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 					AddResource(res, "sprites");
 			}
 
+			if (Dump.Options.asset_sounds)
+			{
+				foreach (var res in source.Sounds)
+					AddResource(res, "sounds");
+			}
+
 			if (Dump.Options.asset_rooms)
 			{
 				foreach (var res in source.Rooms)
@@ -203,8 +209,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 				AudioGroups.Add(new GMAudioGroup() { name = "audiogroup_default" });
 
 			// Included files
-			foreach (var source in Files.FileList.Where(i => i.Included))
-				IncludedFiles.Add(new GMIncludedFile(source));
+			if (Dump.Options.asset_includedfiles)
+			{
+				foreach (var source in Files.FileList.Where(i => i.Included))
+					IncludedFiles.Add(new GMIncludedFile(source));
+			}
 		}
 
 		public void Save(string rootFolder = null)

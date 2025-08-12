@@ -31,11 +31,37 @@
 
 			<!-- Sprites -->
 			<UndertaleModTool:ButtonDark Content="Sprites" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4"/>
-			<CheckBox Content="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sprites, Mode=TwoWay}"/>
+			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sprites, Mode=TwoWay}"/>
 
+			<!-- Tile Sets -->
+			
 			<!-- Sounds -->
 			<UndertaleModTool:ButtonDark Content="Sounds" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="1"/>
-			<CheckBox Content="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sounds, Mode=TwoWay}" Grid.Column="1"/>
+			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sounds, Mode=TwoWay}" Grid.Column="1"/>
+
+			<!-- Paths -->
+
+			<!-- Scripts -->
+
+			<!-- Shaders -->
+			<UndertaleModTool:ButtonDark Content="Shaders" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2"/>
+			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_shaders, Mode=TwoWay}" Grid.Column="2"/>
+
+			<!-- Fonts -->
+
+			<!-- Timelines -->
+
+			<!-- Objects -->
+
+			<!-- Rooms -->
+
+			<!-- Sequences -->
+
+			<!-- Animation Curves -->
+
+			<!-- Notes -->
+
+			<!-- Extensions -->
 		</Grid>
 		<UndertaleModTool:ButtonDark Content="Do that" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Padding="24,4,24,4" FontSize="24" Margin="0,0,0,16" Click="StartButton_Click"/>
 	</Grid>
