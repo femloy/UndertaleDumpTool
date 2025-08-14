@@ -236,7 +236,7 @@ namespace UndertaleModTool
             Highlighted = new DescriptionView("Welcome to UndertaleModTool!", "Open a data.win file to get started, then double click on the items on the left to view them.");
             OpenInTab(Highlighted);
 
-            TitleMain = "UndertaleModTool v:" + Version; // Just put the fries in the bag krzys_h quit stroking your goose
+            TitleMain = "Undertale(Dump)Tool v:" + Version; // Just put the fries in the bag krzys_h quit stroking your goose
 
             CanSave = false;
             CanSafelySave = false;
@@ -2631,12 +2631,12 @@ namespace UndertaleModTool
 
         private void MenuItem_GitHub_Click(object sender, RoutedEventArgs e)
         {
-            OpenBrowser("https://github.com/femloy/UndertaleMoreConvenientModTool");
+            OpenBrowser("https://github.com/femloy/UndertaleDumpTool");
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowMessage("UndertaleModTool by krzys_h and the Underminers team\nFork by Lila.\nVersion " + Version, "About");
+            this.ShowMessage("UndertaleModTool by krzys_h and the Underminers team\nUndertaleDumpTool fork by femloy\nVersion " + Version, "About");
         }
 
         /// From https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Dialogs/AboutAvaloniaDialog.xaml.cs
