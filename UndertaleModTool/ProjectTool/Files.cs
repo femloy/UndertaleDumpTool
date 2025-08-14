@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UndertaleModTool.ProjectTool
 {
@@ -56,16 +54,19 @@ namespace UndertaleModTool.ProjectTool
 
 				if (target.Directory == Dump.Options.data_filedir)
 				{
-					if (Dump.Options.data_do_exe && target.Extension == ".exe" && File.ReadAllLines(source).Last().Contains("YoYoGames.GameMaker.Runner"))
+					if (target.Extension == ".exe" && File.ReadAllLines(source).Last().Contains("YoYoGames.GameMaker.Runner"))
 					{
-						if (PROGRAM_EXE != null)
+						if (Dump.Options.data_do_exe)
 						{
-							// User has multiple gamemaker runners in the same fucking folder
-							retarded = true;
-							PROGRAM_EXE = null;
+							if (PROGRAM_EXE != null)
+							{
+								// User has multiple gamemaker runners in the same fucking folder
+								retarded = true;
+								PROGRAM_EXE = null;
+							}
+							if (!retarded)
+								PROGRAM_EXE = target;
 						}
-						if (!retarded)
-							PROGRAM_EXE = target;
 						target.Included = false;
 					}
 

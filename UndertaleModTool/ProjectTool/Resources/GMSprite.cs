@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using ImageMagick;
 using ImageMagick.Drawing;
 using UndertaleModLib.Models;
 using UndertaleModLib.Util;
-using static UndertaleModLib.Models.UndertaleSequence;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -294,7 +289,9 @@ namespace UndertaleModTool.ProjectTool.Resources
             #endregion
 
             parent = new IdPath("Sprites", "folders/Sprites.yy");
-        }
+			lock (Dump.ProjectResources)
+				Dump.ProjectResources.Add(name, "sprites");
+		}
 
         /// <summary>
         /// Saves the sprite into GameMaker project format

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UndertaleModTool.ProjectTool.Resources
+﻿namespace UndertaleModTool.ProjectTool.Resources
 {
 	public static class Constants
 	{
@@ -31,8 +25,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 					continue;
 				}
 
-				// TODO: macros.
-				// Not sure if these appear in LTS.
+				// TODO: macros that replace built-in functions... for some reason.
+				// ^ Name: "draw_text" Value: "\n#line gml_Script_SCRIPT LINE\nVALUE"
 			}
 		}
 	}

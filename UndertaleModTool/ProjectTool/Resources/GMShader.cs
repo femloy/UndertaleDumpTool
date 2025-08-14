@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources
@@ -52,14 +49,14 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
 
 			parent = new IdPath("Shaders", "folders/Shaders.yy");
+			lock (Dump.ProjectResources)
+				Dump.ProjectResources.Add(name, "shaders");
 		}
 
 		public void Save(string rootFolder = null)
 		{
-			if (rootFolder == null)
-				rootFolder = Dump.RelativePath($"shaders/{name}");
+			rootFolder ??= Dump.RelativePath($"shaders/{name}");
 			Directory.CreateDirectory(rootFolder);
-
 			Dump.ToJsonFile(rootFolder + $"/{name}.yy", this);
 			File.WriteAllText(rootFolder + $"/{name}.vsh", vertex);
 			File.WriteAllText(rootFolder + $"/{name}.fsh", fragment);

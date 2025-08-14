@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UndertaleModLib;
-using UndertaleModTool.ProjectTool.Resources.GMOptions;
+﻿using UndertaleModLib;
 
 namespace UndertaleModTool.ProjectTool.Resources.Options
 {

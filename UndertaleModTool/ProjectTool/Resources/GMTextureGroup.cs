@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using UndertaleModLib;
 using UndertaleModLib.Models;
 
@@ -103,6 +100,7 @@ namespace UndertaleModTool.ProjectTool.Resources
     public static class TpageAlign
     {
         private static Dictionary<string, UndertaleTextureGroupInfo> _align = new();
+
         public static List<UndertaleTextureGroupInfo> TextureGroups = new();
 
 		public static void Clear()
@@ -112,6 +110,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			ConsoleGroup = false;
 			TexturePageSize = 2048;
 		}
+
         public static void Init()
         {
 			foreach (var source in Dump.Data.TextureGroupInfo)

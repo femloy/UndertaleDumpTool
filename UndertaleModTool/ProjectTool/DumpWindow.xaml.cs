@@ -20,8 +20,8 @@ namespace UndertaleModTool.ProjectTool
     /// </summary>
     public partial class DumpWindow : Window
     {
-		MainWindow MainWindow = Application.Current.MainWindow as MainWindow;
-		bool endDumpOnClose = true;
+		MainWindow _mainWindow = Application.Current.MainWindow as MainWindow;
+		bool _doEndOnClosed = true;
 
         public DumpWindow()
         {
@@ -31,19 +31,19 @@ namespace UndertaleModTool.ProjectTool
 
         private async Task Start()
         {
-            Dump.Current.BasePath = MainWindow.PromptChooseDirectory();
-            if (Dump.Current.BasePath == null)
+            Dump.BasePath = _mainWindow.PromptChooseDirectory();
+            if (Dump.BasePath == null)
 				return;
 
-			endDumpOnClose = false;
+			_doEndOnClosed = false;
 			Close();
-			MainWindow.StartProgressBarUpdater();
+			_mainWindow.StartProgressBarUpdater();
 
 			try
 			{
 				await Task.Run(() => Dump.Current.Start());
 
-				MainWindow.SetUMTConsoleText("");
+				_mainWindow.SetUMTConsoleText("");
 
 				bool openInExplorer = Dump.YesNoQuestion("Done. Open folder?");
 				if (openInExplorer)
@@ -51,21 +51,21 @@ namespace UndertaleModTool.ProjectTool
 			}
 			catch (Exception ex)
 			{
-				MainWindow.ScriptError($"{ex.Message}\n\n---\n\n{ex.ToString()}");
-				MainWindow.SetUMTConsoleText(ex.ToString());
+				_mainWindow.ScriptError($"{ex.Message}\n\n---\n\n{ex.ToString()}");
+				_mainWindow.SetUMTConsoleText(ex.ToString());
 			}
 
-			await MainWindow.StopProgressBarUpdater();
-			MainWindow.HideProgressBar();
+			await _mainWindow.StopProgressBarUpdater();
+			_mainWindow.HideProgressBar();
 
-			MainWindow.DumpEnd();
+			_mainWindow.DumpEnd();
 		}
 
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			if (endDumpOnClose)
-				MainWindow.DumpEnd();
+			if (_doEndOnClosed)
+				_mainWindow.DumpEnd();
 		}
 
 		private void StartButton_Click(object sender, RoutedEventArgs e)

@@ -9,7 +9,7 @@
         <DebugType>embedded</DebugType>
         <Platforms>AnyCPU;x64</Platforms>
         <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>

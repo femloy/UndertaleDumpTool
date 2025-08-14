@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using UndertaleModLib;
 using UndertaleModLib.Models;
-using static UndertaleModTool.ProjectTool.Resources.GMProject;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -91,14 +87,14 @@ namespace UndertaleModTool.ProjectTool.Resources
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="folder"></param>
-		public void AddResource(UndertaleNamedResource source, string folder)
+		public void AddResource(string name, string folder)
 		{
 			if (folder != _previousResourceFolder)
 			{
 				_resourceOrder = 0;
 				_previousResourceFolder = folder;
 			}
-			resources.Add(new Resource(new IdPath(source.Name.Content, $"{folder}/{source.Name.Content}/{source.Name.Content}.yy"), _resourceOrder++));
+			resources.Add(new Resource(new IdPath(name, $"{folder}/{name}/{name}.yy"), _resourceOrder++));
 		}
 		private uint _resourceOrder = 0;
 		private string _previousResourceFolder = "";
@@ -115,26 +111,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (source.GeneralInfo.Config.Content != "Default")
 				configs.children.Add(new Config() { name = source.GeneralInfo.Config.Content });
 
+			foreach (var asset in Dump.ProjectResources)
+				AddResource(asset.Key, asset.Value);
+
 			#region Folders
 
-			string[] baseFolders =
-			{
-				"Sprites",
-				"Tile Sets",
-				"Sounds",
-				"Paths",
-				"Scripts",
-				"Shaders",
-				"Fonts",
-				"Timelines",
-				"Objects",
-				"Rooms",
-				"Sequences",
-				"Animation Curves",
-				"Notes",
-				"Extensions"
-			};
-			foreach (var item in baseFolders)
+			foreach (var item in _baseFolders)
 				Folders.Add(new GMFolder(item) { order = Folders.Count });
 
 			#endregion
@@ -158,25 +140,10 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
 
 			#endregion
-			#region Resources (TODO)
-
-			if (Dump.Options.asset_sprites)
-			{
-				foreach (var res in source.Sprites)
-					AddResource(res, "sprites");
-			}
-
-			if (Dump.Options.asset_sounds)
-			{
-				foreach (var res in source.Sounds)
-					AddResource(res, "sounds");
-			}
+			#region Room Order
 
 			if (Dump.Options.asset_rooms)
 			{
-				foreach (var res in source.Rooms)
-					AddResource(res, "rooms");
-
 				foreach (var node in source.GeneralInfo.RoomOrder)
 				{
 					string nodeName = node.Resource.Name.Content;
@@ -185,11 +152,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
 
 			#endregion
-		}
+			#region Texture Groups
 
-		public void FinishingTouches()
-		{
-			// Audio/Texture Groups
 			if (Dump.Options.asset_texturegroups)
 			{
 				foreach (var group in TpageAlign.TextureGroups)
@@ -200,27 +164,57 @@ namespace UndertaleModTool.ProjectTool.Resources
 			else
 				TextureGroups.Add(new GMTextureGroup() { name = "Default" });
 
+			#endregion
+			#region Audio Groups
+
 			if (Dump.Options.asset_audiogroups)
 			{
-				foreach (var group in Dump.Data.AudioGroups)
+				foreach (var group in source.AudioGroups)
 					AudioGroups.Add(new GMAudioGroup(group));
 			}
 			else
 				AudioGroups.Add(new GMAudioGroup() { name = "audiogroup_default" });
 
-			// Included files
+			#endregion
+			#region Included Files
+
 			if (Dump.Options.asset_includedfiles)
 			{
-				foreach (var source in Files.FileList.Where(i => i.Included))
-					IncludedFiles.Add(new GMIncludedFile(source));
+				foreach (var file in Files.FileList.Where(i => i.Included))
+					IncludedFiles.Add(new GMIncludedFile(file));
 			}
+
+			#endregion
+		}
+
+		private readonly string[] _baseFolders =
+		{
+			"Sprites",
+			"Tile Sets",
+			"Sounds",
+			"Paths",
+			"Scripts",
+			"Shaders",
+			"Fonts",
+			"Timelines",
+			"Objects",
+			"Rooms",
+			"Sequences",
+			"Animation Curves",
+			"Notes",
+			"Extensions"
+		};
+
+		public void PostResources()
+		{
+			
+
+			
 		}
 
 		public void Save(string rootFolder = null)
 		{
-			if (rootFolder == null)
-				rootFolder = Dump.RelativePath("");
-
+			rootFolder ??= Dump.RelativePath("");
 			Dump.ToJsonFile(rootFolder + $"/{name}.yyp", this);
 		}
 	}

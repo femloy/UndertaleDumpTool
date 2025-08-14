@@ -1,71 +1,126 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using Newtonsoft.Json;
+using Underanalyzer.Decompiler;
 using UndertaleModLib;
+using UndertaleModLib.Decompiler;
 using UndertaleModLib.Models;
 using UndertaleModLib.Util;
 using UndertaleModTool.ProjectTool.Resources;
-using UndertaleModTool.ProjectTool.Resources.GMOptions;
-using UndertaleModTool.ProjectTool.Resources.Options;
 
 namespace UndertaleModTool.ProjectTool
 {
     public partial class Dump
     {
-		public string BasePath;
 		private DumpOptions _options;
         TextureWorker _worker = new();
-		private GMProject _project = new();
+		private string _basePath;
 
-		public Dump(MainWindow theWindowInQuestion)
+		public static Dump Current;
+		public static TextureWorker TexWorker => Current?._worker;
+		public static GlobalDecompileContext DecompileContext;
+		public static DecompileSettings DecompilerSettings;
+		public static DumpOptions Options => Current?._options;
+		public static string BasePath { get => Current?._basePath; set => Current._basePath = value; }
+		public static Dictionary<string, string> ProjectResources = new();
+
+		public Dump()
 		{
-			MainWindow = theWindowInQuestion;
 			_options = new();
+			ProjectResources.Clear();
+
+			DecompilerSettings = new DecompileSettings()
+			{
+				IndentString = "	",
+				CreateEnumDeclarations = false,
+				UnknownEnumName = "@\r@",
+				UnknownEnumValuePattern = "{0}",
+				UnknownArgumentNamePattern = "_argument{0}",
+				RemoveSingleLineBlockBraces = true
+			};
+			DecompilerSettings.MultiPartPredefinedDoubles = new()
+			{
+				{ 6.283185307179586, "pi * 2" },
+				{ 12.566370614359172, "pi * 4" },
+				{ 31.41592653589793, "pi * 10" },
+				{ 1.5707963267948966, "pi / 2" },
+				{ 0.3333333333333333, "1 / 3" },
+				{ 0.6666666666666666, "2 / 3" },
+				{ 1.3333333333333333, "4 / 3" },
+				{ 23.333333333333332, "70 / 3" },
+				{ 73.33333333333333, "220 / 3" },
+				{ 206.66666666666666, "620 / 3" },
+				{ 51.42857142857143, "360 / 7" },
+				{ 1.0909090909090908, "12 / 11" },
+				{ 0.06666666666666667, "1 / 15" },
+				{ 0.9523809523809523, "20 / 21" },
+				{ 0.03333333333333333, "1 / 30" },
+				{ 0.008333333333333333, "1 / 120" }
+			};
+		}
+
+		public static string DumpCode(UndertaleCode code)
+		{
+			string codeString = new DecompileContext(DecompileContext, code, DecompilerSettings).DecompileToString().Trim();
+			codeString = codeString.Replace("@\r@.", "/*enum*/");
+
+			// Code tweaks
+			if (codeString == "exit;")
+				codeString = "";
+
+			if (codeString != "")
+				codeString += "\n";
+
+			return codeString;
 		}
 
 		public async Task DumpAsset<A, B>(string name, IList<B> list) where A : ISaveable where B : UndertaleNamedResource
 		{
 			SetupProgress(name, list.Count);
 
+			A.Init();
+
 			await Task.Run(() => Parallel.ForEach(list, (source) =>
 			{
 				UpdateStatus(source.Name.Content);
 
 				var asset = (A)Activator.CreateInstance(typeof(A), new object[] { source });
-				asset.Save();
+				if (asset.IsValid())
+					asset.Save();
 
 				IncrementProgress();
 			}));
+
+			A.End();
+		}
+
+		public static string NonconflictingAssetName(string name)
+		{
+			while (Data.ByName(name, true) is not null)
+				name += $"_new";
+			return name;
 		}
 
         public async Task Start()
         {
+			if (Data is null)
+				throw new NullReferenceException("Data is null");
+			if (Options.data_filename is null)
+				throw new NullReferenceException("Data filename is null");
+
+			DecompileContext = new(Data);
+
 			Files.Init();
 			Constants.Init();
-			GMSound.InitGroupTracking();
 			TpageAlign.Clear();
 
-			if (Options.asset_texturegroups) // GMProject relies on this so it's placed earlier
+			if (Options.asset_texturegroups)
 				TpageAlign.Init();
-
-			#region Dump Resources
-
-			if (Options.asset_project)
-				_project = new GMProject(Data);
 
 			if (Options.asset_options)
 			{
-				new GMMainOptions(Data).Save();
-				new GMWindowsOptions(Data).Save();
+				new Resources.Options.GMMainOptions(Data).Save();
+				new Resources.Options.GMWindowsOptions(Data).Save();
 
 				if (Options.options_other_platforms)
 				{
@@ -77,16 +132,13 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMShader, UndertaleShader>("Shaders", Data.Shaders);
 			if (Options.asset_sounds)
 				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
+			if (Options.asset_scripts)
+				await DumpAsset<GMScript, UndertaleScript>("Scripts", Data.Scripts);
 			if (Options.asset_sprites)
 				await DumpAsset<GMSprite, UndertaleSprite>("Sprites", Data.Sprites);
 
-			#endregion
-
 			if (Options.asset_project)
-			{
-				_project.FinishingTouches();
-				_project.Save();
-			}
+				new GMProject(Data).Save();
 
 			if (Options.asset_includedfiles)
 				Files.Save();
@@ -99,17 +151,5 @@ namespace UndertaleModTool.ProjectTool
 
             GC.SuppressFinalize(this);
         }
-
-		public static void AddFolder(string nameAndPath)
-		{
-			var project = Current?._project;
-			if (project == null) return;
-			project.Folders.Add(new GMFolder(nameAndPath) { order = project.Folders.Count });
-		}
-
-		public static MainWindow MainWindow;
-        public static Dump Current;
-        public static TextureWorker TexWorker => Current?._worker;
-		public static DumpOptions Options => Current?._options;
     }
 }

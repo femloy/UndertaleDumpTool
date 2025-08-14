@@ -8,7 +8,6 @@ using NAudio.Vorbis;
 using NAudio.Wave;
 using UndertaleModLib;
 using UndertaleModLib.Models;
-using static UndertaleModTool.ProjectTool.Resources.GMProject;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -91,7 +90,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		private static Dictionary<string, IList<UndertaleEmbeddedAudio>> loadedAudioGroups = new();
 		public static List<string> UsedAudioGroups = new();
 
-		public static void InitGroupTracking()
+		public static void Init()
 		{
 			loadedAudioGroups.Clear();
 			UsedAudioGroups.Clear();
@@ -103,6 +102,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			volume = source.Volume;
 			parent = new IdPath("Sounds", "folders/Sounds.yy");
 			soundFile = source.File.Content;
+			lock (Dump.ProjectResources)
+				Dump.ProjectResources.Add(name, "sounds");
 
 			if (source.Flags.HasFlag(UndertaleSound.AudioEntryFlags.IsDecompressedOnLoad))
 				compression = Compression.UncompressOnLoad;
@@ -186,8 +187,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 		public void Save(string rootFolder = null)
 		{
-			if (rootFolder == null)
-				rootFolder = Dump.RelativePath($"sounds/{name}");
+			rootFolder ??= Dump.RelativePath($"sounds/{name}");
 			Directory.CreateDirectory(rootFolder);
 
 			Dump.ToJsonFile(rootFolder + $"/{name}.yy", this);

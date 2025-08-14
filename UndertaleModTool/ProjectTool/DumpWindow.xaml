@@ -27,6 +27,7 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
+				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
 			<!-- Sprites -->
@@ -42,6 +43,8 @@
 			<!-- Paths -->
 
 			<!-- Scripts -->
+			<UndertaleModTool:ButtonDark Content="Scripts" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="3"/>
+			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_scripts, Mode=TwoWay}" Grid.Column="3"/>
 
 			<!-- Shaders -->
 			<UndertaleModTool:ButtonDark Content="Shaders" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2"/>

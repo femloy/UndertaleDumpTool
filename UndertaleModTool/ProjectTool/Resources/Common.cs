@@ -57,16 +57,19 @@ namespace UndertaleModTool.ProjectTool.Resources
         public string name { get; set; }
         public string path { get; set; }
 
-        public void SetName(string name)
+        public void SetName(string _name)
         {
-            if (this.path.EndsWith(this.name))
-                this.path = _base_path + "/" + name;
-            this.name = name;
+            if (path.EndsWith(name))
+                path = _base_path + "/" + _name;
+            name = _name;
         }
     }
 
 	public interface ISaveable
-	{
+	{		
 		public void Save(string rootFolder = null);
+		public bool IsValid() => true;
+		public virtual static void Init() { }
+		public virtual static void End() { }
 	}
 }
