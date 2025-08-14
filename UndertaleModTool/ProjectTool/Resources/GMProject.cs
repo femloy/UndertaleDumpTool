@@ -82,22 +82,13 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public List<GMIncludedFile> IncludedFiles { get; set; } = new();
 		public MetaDataClass MetaData { get; set; } = new();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="folder"></param>
 		public void AddResource(string name, string folder)
 		{
-			if (folder != _previousResourceFolder)
-			{
-				_resourceOrder = 0;
-				_previousResourceFolder = folder;
-			}
+			if (Dump.Options.project_sort_assets && Dump.ResourceIndexByName(name, out int id))
+				_resourceOrder = (uint)id;
 			resources.Add(new Resource(new IdPath(name, $"{folder}/{name}/{name}.yy"), _resourceOrder++));
 		}
 		private uint _resourceOrder = 0;
-		private string _previousResourceFolder = "";
 
 		/// <summary>
 		/// Create GMProject out of UndertaleData
@@ -113,6 +104,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 			foreach (var asset in Dump.ProjectResources)
 				AddResource(asset.Key, asset.Value);
+
+			if (Dump.Options.project_sort_assets)
+				resources = resources.OrderBy(i => i.order).ToList();
 
 			#region Folders
 
@@ -204,13 +198,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 			"Notes",
 			"Extensions"
 		};
-
-		public void PostResources()
-		{
-			
-
-			
-		}
 
 		public void Save(string rootFolder = null)
 		{

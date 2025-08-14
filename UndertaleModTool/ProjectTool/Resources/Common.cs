@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace UndertaleModTool.ProjectTool.Resources
@@ -18,11 +14,14 @@ namespace UndertaleModTool.ProjectTool.Resources
             resourceType = GetType().Name;
         }
 
-        public string resourceType { get; internal set; }
-        public string resourceVersion { get; internal set; } = "1.0";
+		[JsonProperty(Order = int.MinValue)]
+		public string resourceType { get; internal set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string name { get; set; }
+		[JsonProperty(Order = int.MinValue)]
+		public string resourceVersion { get; internal set; } = "1.0";
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, Order = int.MinValue)]
+		public string name { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public IdPath parent { get; set; }

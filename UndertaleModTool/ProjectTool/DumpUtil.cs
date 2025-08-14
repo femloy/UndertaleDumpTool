@@ -33,6 +33,21 @@ namespace UndertaleModTool.ProjectTool
 		{
 			return Path.Combine(BasePath, path);
 		}
+		public static bool ResourceIndexByName(string name, out int index, bool ignoreCase = true)
+		{
+			index = -1;
+
+			var r = Data.ByName(name, ignoreCase);
+			if (r == null)
+				return false;
+
+			var i = Data.IndexOf(r, false);
+			if (i == -2)
+				return false;
+
+			index = i;
+			return true;
+		}
 
 		/// <summary>
 		/// Thank me later BUDDY

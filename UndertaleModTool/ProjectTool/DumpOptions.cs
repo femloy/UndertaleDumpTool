@@ -36,5 +36,7 @@ namespace UndertaleModTool.ProjectTool
 		public bool texture_autocrop { get; set; } = true; // Figure out whether "automatically crop" is enabled in texture pages. Otherwise default to true
 											 // (will be wrong if all sprites are already pre-cropped in the first place.)
 		public bool texture_uppercase_name { get; set; } = false; // User preference. GameMaker doesn't export their capitalization
+
+		public bool project_sort_assets { get; set; } = true;
 	}
 }
