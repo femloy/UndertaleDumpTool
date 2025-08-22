@@ -4,12 +4,17 @@ namespace UndertaleModTool.ProjectTool
 {
 	public class DumpOptions
     {
+		public string data_filename { get; set; } = null; // .../DumpTest/data.win
+		public string data_filedir => Path.GetDirectoryName(data_filename); // .../DumpTest
+		public bool data_do_exe { get; set; } = true; // Whether to recognize the GameMaker runner in the data.win folder for publisher info and such
+
 		public bool asset_project { get; set; } = true;
 		public bool asset_sprites { get; set; } = true;
 		public bool asset_sounds { get; set; } = true;
 		public bool asset_shaders { get; set; } = true;
 		public bool asset_scripts { get; set; } = true;
 		public bool asset_rooms { get; set; } = false; // mspar remember...
+		public bool asset_objects { get; set; } = true;
 		public bool asset_texturegroups { get; set; } = true;
 		public bool asset_audiogroups { get; set; } = true;
 		public bool asset_includedfiles { get; set; } = true;
@@ -25,10 +30,6 @@ namespace UndertaleModTool.ProjectTool
 														   // the original mask for the thing above to trigger (0-1)
 		public bool sprite_missing_texture { get; set; } = true; // Generates a purple/black checkerboard picture for null textures
 		public bool sprite_skip_existing { get; set; } = true; // Skip already dumped frames
-		
-		public string data_filename { get; set; } = null; // .../DumpTest/data.win
-		public string data_filedir => Path.GetDirectoryName(data_filename); // .../DumpTest
-		public bool data_do_exe { get; set; } = true; // Whether to recognize the GameMaker runner in the data.win folder for publisher info and such
 
 		public bool options_other_platforms { get; set; } = false; // Sets up matching settings for every platform other than Windows (no consoles)
 

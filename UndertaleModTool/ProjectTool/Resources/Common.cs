@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using UndertaleModLib;
+using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -32,7 +34,8 @@ namespace UndertaleModTool.ProjectTool.Resources
     /// </summary>
     public class IdPath
     {
-        public IdPath(string name, string path)
+		private string _base_path;
+		public IdPath(string name, string path)
         {
             if (path.EndsWith('/'))
             {
@@ -51,8 +54,6 @@ namespace UndertaleModTool.ProjectTool.Resources
             this.path = path;
         }
 
-        private string _base_path;
-
         public string name { get; set; }
         public string path { get; set; }
 
@@ -62,7 +63,42 @@ namespace UndertaleModTool.ProjectTool.Resources
                 path = _base_path + "/" + _name;
             name = _name;
         }
-    }
+
+		public static IdPath From<T>(T source) where T : UndertaleNamedResource
+		{
+			if (source == null) return null;
+			string n = source.Name.Content;
+			return source switch
+			{
+				UndertaleSprite => Dump.Options.asset_sprites ? new IdPath(n, $"sprites/{n}/{n}.yy") : null,
+				UndertaleGameObject => Dump.Options.asset_objects ? new IdPath(n, $"objects/{n}/{n}.yy") : null,
+				UndertaleRoom => Dump.Options.asset_rooms ? new IdPath(n, $"rooms/{n}/{n}.yy") : null,
+				UndertaleAnimationCurve => new IdPath(n, $"animcurves/{n}/{n}.yy"),
+				UndertaleExtension => new IdPath(n, $"extensions/{n}/{n}.yy"),
+				UndertaleFont => new IdPath(n, $"fonts/{n}/{n}.yy"),
+				UndertalePath => new IdPath(n, $"paths/{n}/{n}.yy"),
+				UndertaleScript => Dump.Options.asset_scripts ? new IdPath(n, $"scripts/{n}/{n}.yy") : null,
+				UndertaleSequence => new IdPath(n, $"sequences/{n}/{n}.yy"),
+				UndertaleShader => Dump.Options.asset_shaders ? new IdPath(n, $"shaders/{n}/{n}.yy") : null,
+				UndertaleSound => Dump.Options.asset_sounds ? new IdPath(n, $"sounds/{n}/{n}.yy") : null,
+				UndertaleTimeline => new IdPath(n, $"timelines/{n}/{n}.yy"),
+				UndertaleBackground => new IdPath(n, $"tilesets/{n}/{n}.yy"),
+				_ => throw new System.NotImplementedException()
+			};
+		}
+	}
+
+	public class Point
+	{
+		public Point(double x, double y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		public double x { get; set; }
+		public double y { get; set; }
+	}
 
 	public interface ISaveable
 	{		

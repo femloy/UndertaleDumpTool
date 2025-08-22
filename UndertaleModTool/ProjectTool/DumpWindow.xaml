@@ -16,7 +16,7 @@
 					<TranslateTransform X="0" Y="8"/>
 				</TransformGroup>
 			</Label.RenderTransform>
-			<TextBlock TextAlignment="Center"><Run Text="Warning: This is meant for UNDERTALE and DELTARUNE, and nothing else."/><LineBreak/><Run Text="Decompiling with UTMT is unreliable for most other cases including mods."/></TextBlock>
+			<TextBlock TextAlignment="Center"><Run Text="Warning: This is mostly tailored to NXTALE and DELTARUNE."/><LineBreak/><Run Text="It can be unreliable for most other cases, especially mods."/></TextBlock>
 		</Label>
 		<Grid Margin="32,64,32,96">
 			<Grid.RowDefinitions>
@@ -55,6 +55,8 @@
 			<!-- Timelines -->
 
 			<!-- Objects -->
+			<UndertaleModTool:ButtonDark Content="Objects" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="0" Grid.Row="1"/>
+			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_objects, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"/>
 
 			<!-- Rooms -->
 

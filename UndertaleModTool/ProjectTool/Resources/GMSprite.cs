@@ -5,6 +5,7 @@ using ImageMagick;
 using ImageMagick.Drawing;
 using UndertaleModLib.Models;
 using UndertaleModLib.Util;
+using static UndertaleModTool.ProjectTool.Resources.GMProject;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -88,7 +89,9 @@ namespace UndertaleModTool.ProjectTool.Resources
                 sequence.tracks.Add(_framesTrack);
             }
 
-            string frameGuid = Dump.ToGUID($"{name}.{index}");
+			Dump.UpdateStatus($"{name} - Frame {index}");
+
+			string frameGuid = Dump.ToGUID($"{name}.{index}");
             frames.Add(new GMSpriteFrame { name = frameGuid });
 
             SpriteFrameKeyframe keyframe = new();

@@ -141,7 +141,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 				foreach (var node in source.GeneralInfo.RoomOrder)
 				{
 					string nodeName = node.Resource.Name.Content;
-					RoomOrderNodes.Add(new RoomOrderNode() { roomId = new IdPath(nodeName, $"rooms/{nodeName}/{nodeName}.yy") });
+					RoomOrderNodes.Add(new RoomOrderNode() { roomId = IdPath.From(node.Resource) });
 				}
 			}
 

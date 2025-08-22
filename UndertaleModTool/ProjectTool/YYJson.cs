@@ -60,7 +60,8 @@ namespace UndertaleModTool.ProjectTool
 
 					case '\"':
 						if (escapeNextChar)
-							break;
+							goto default;
+
 						isString = !isString;
 						sb.Append(c);
 						break;

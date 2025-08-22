@@ -34,9 +34,11 @@ namespace UndertaleModTool.ProjectTool
 				IndentString = "	",
 				CreateEnumDeclarations = false,
 				UnknownEnumName = "@\r@",
-				UnknownEnumValuePattern = "{0}",
+				UnknownEnumValuePattern = "int64({0})",
 				UnknownArgumentNamePattern = "_argument{0}",
-				RemoveSingleLineBlockBraces = true
+				RemoveSingleLineBlockBraces = true,
+				EmptyLineBeforeSwitchCases = true,
+				EmptyLineAroundBranchStatements = true
 			};
 			DecompilerSettings.MultiPartPredefinedDoubles = new()
 			{
@@ -80,7 +82,7 @@ namespace UndertaleModTool.ProjectTool
 
 			A.Init();
 
-			await Task.Run(() => Parallel.ForEach(list, (source) =>
+			await Task.Run(() => Parallel.ForEach(list, (source, state, index) =>
 			{
 				UpdateStatus(source.Name.Content);
 
@@ -134,6 +136,8 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
 			if (Options.asset_scripts)
 				await DumpAsset<GMScript, UndertaleScript>("Scripts", Data.Scripts);
+			if (Options.asset_objects)
+				await DumpAsset<GMObject, UndertaleGameObject>("Objects", Data.GameObjects);
 			if (Options.asset_sprites)
 				await DumpAsset<GMSprite, UndertaleSprite>("Sprites", Data.Sprites);
 
