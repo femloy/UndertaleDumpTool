@@ -15,6 +15,7 @@ namespace UndertaleModTool.ProjectTool
 		public bool asset_scripts { get; set; } = true;
 		public bool asset_rooms { get; set; } = false; // mspar remember...
 		public bool asset_objects { get; set; } = true;
+		public bool asset_tilesets { get; set; } = true;
 		public bool asset_texturegroups { get; set; } = true;
 		public bool asset_audiogroups { get; set; } = true;
 		public bool asset_includedfiles { get; set; } = true;
@@ -39,5 +40,8 @@ namespace UndertaleModTool.ProjectTool
 		public bool texture_uppercase_name { get; set; } = false; // User preference. GameMaker doesn't export their capitalization
 
 		public bool project_sort_assets { get; set; } = true;
+
+		public bool tileset_compress { get; set; } = true; // Whether to use GameMaker's modified RLE for tilemaps
+		public bool tileset_reconstruct_sprite { get; set; } = false; // Whether to rebuild the sprite out of the output tileset image (WIP)
 	}
 }

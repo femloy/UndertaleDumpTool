@@ -7,6 +7,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 {
 	public class GMShader : ResourceBase, ISaveable
 	{
+		public GMShader() : base()
+		{
+			parent = new IdPath("Shaders", "folders/", true);
+		}
+
 		public enum Type
 		{
 			GLSL_ES = 1,
@@ -19,7 +24,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 		private string fragment = "";
 		private string vertex = "";
 
-		public GMShader(UndertaleShader source)
+		/// <summary>
+		/// Translate an UndertaleShader into a new GMShader
+		/// </summary>
+		/// <param name="source"></param>
+		public GMShader(UndertaleShader source) : this()
 		{
 			name = source.Name.Content;
 
@@ -48,7 +57,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 					throw new Exception($"Unsupported shader type {source.Type.ToString()}");
 			}
 
-			parent = new IdPath("Shaders", "folders/Shaders.yy");
 			lock (Dump.ProjectResources)
 				Dump.ProjectResources.Add(name, "shaders");
 		}

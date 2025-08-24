@@ -40,8 +40,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public List<GMObjectProperty> properties { get; set; } = new();
 		public List<GMOverriddenProperty> overriddenProperties { get; set; } = new();
 
-
-
 		public static Dictionary<UndertaleGameObject, Dictionary<string, string>> CachedProperties = new(); // <object, <propname, propvalue>>
 		public static void Init()
 		{
@@ -72,10 +70,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			}
 		}
 
-
-
 		private Dictionary<string, string> _files = new();
-		public GMObject(UndertaleGameObject source)
+		public GMObject(UndertaleGameObject source) : base()
 		{
 			name = source.Name.Content;
 			spriteId = IdPath.From(source.Sprite);
@@ -104,7 +100,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 				physicsShapePoints.Add(new Point(point.X, point.Y));
 
 			#endregion
-
 			#region Events
 
 			for (int event_id = 0; event_id < source.Events.Count; ++event_id)
@@ -155,6 +150,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 
 			parent = new IdPath("Objects", "folders/Objects.yy");
+			lock (Dump.ProjectResources)
+				Dump.ProjectResources.Add(name, "objects");
 		}
 
 		public void Save(string rootFolder = null)

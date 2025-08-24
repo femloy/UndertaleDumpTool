@@ -4,7 +4,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 {
 	public class GMLinuxOptions : ResourceBase
 	{
-		public GMLinuxOptions()
+		public GMLinuxOptions() : base()
 		{
 			name = "Linux";
 		}

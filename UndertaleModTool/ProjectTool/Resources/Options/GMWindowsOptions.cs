@@ -7,7 +7,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 {
 	public class GMWindowsOptions : ResourceBase, ISaveable
 	{
-		public GMWindowsOptions()
+		public GMWindowsOptions() : base()
 		{
 			name = "Windows";
 			resourceVersion = "1.1";
@@ -105,10 +105,9 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 
 		public void Save(string rootFolder = null)
 		{
-			if (rootFolder == null)
-				rootFolder = Dump.RelativePath("options/windows");
-
+			rootFolder ??= Dump.RelativePath("options/windows");
 			Directory.CreateDirectory(rootFolder);
+
 			Dump.ToJsonFile($"{rootFolder}/options_windows.yy", this);
 
 			if (Files.SPLASH_PNG != null)

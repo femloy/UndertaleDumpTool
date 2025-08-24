@@ -13,6 +13,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 {
 	public class GMSound : ResourceBase, ISaveable
 	{
+		public GMSound() : base()
+		{
+			parent = new IdPath("Sounds", "folders/", true);
+		}
+
 		public enum ConversionMode
 		{
 			Automatic, // Possible file and gamemaker sound property mismatch, it just copies the ogg to the build
@@ -49,10 +54,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public string soundFile { get; set; }
 		public double duration { get; set; }
 
-		// from ExportAllSounds.csx
 		private byte[] _fileData { get; set; } = null;
 		private static readonly byte[] EMPTY_WAV_FILE_BYTES = Convert.FromBase64String("UklGRiQAAABXQVZFZm10IBAAAAABAAIAQB8AAAB9AAAEABAAZGF0YQAAAAA=");
 
+		/// <summary>
+		/// Extracts a sound's data from its audio group. Relies on cache if available. Taken from ExportAllSounds.csx
+		/// </summary>
 		private IList<UndertaleEmbeddedAudio> GetAudioGroupData(UndertaleSound sound)
 		{
 			string audioGroupName = sound.AudioGroup is not null ? sound.AudioGroup.Name.Content : "audiogroup_default";
@@ -90,18 +97,24 @@ namespace UndertaleModTool.ProjectTool.Resources
 		private static Dictionary<string, IList<UndertaleEmbeddedAudio>> loadedAudioGroups = new();
 		public static List<string> UsedAudioGroups = new();
 
+		/// <summary>
+		/// Initialize a cache for audio groups
+		/// </summary>
 		public static void Init()
 		{
 			loadedAudioGroups.Clear();
 			UsedAudioGroups.Clear();
 		}
 
-		public GMSound(UndertaleSound source)
+		/// <summary>
+		/// Translate an UndertaleSound into a new GMSound
+		/// </summary>
+		public GMSound(UndertaleSound source) : this()
 		{
 			name = source.Name.Content;
 			volume = source.Volume;
-			parent = new IdPath("Sounds", "folders/Sounds.yy");
 			soundFile = source.File.Content;
+
 			lock (Dump.ProjectResources)
 				Dump.ProjectResources.Add(name, "sounds");
 

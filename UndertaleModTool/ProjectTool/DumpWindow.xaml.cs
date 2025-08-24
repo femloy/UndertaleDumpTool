@@ -27,6 +27,12 @@ namespace UndertaleModTool.ProjectTool
         {
             InitializeComponent();
 			DataContext = Dump.Options;
+
+			foreach (var item in ButtonGrid.Children)
+			{
+				if (item is CheckBox box)
+					box.PreviewMouseRightButtonDown += CheckBox_RightClick;
+			}
         }
 
 		private async Task Start()
@@ -72,6 +78,32 @@ namespace UndertaleModTool.ProjectTool
 		private void StartButton_Click(object sender, RoutedEventArgs e)
 		{
 			_ = Start();
+		}
+
+		private async void CheckBox_RightClick(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is CheckBox clickedBox)
+			{
+				foreach (var child in ButtonGrid.Children)
+				{
+					if (child is CheckBox otherBox)
+						otherBox.IsChecked = otherBox == clickedBox;
+				}
+
+				ToolTip tt = new()
+				{
+					Content = "Chose this resource for single dumping.",
+					StaysOpen = true,
+					IsOpen = true
+				};
+				clickedBox.ToolTip = tt;
+
+				await Task.Delay(2000);
+
+				if (tt is not null)
+					tt.IsOpen = false;
+				clickedBox.ToolTip = null;
+			}
 		}
 	}
 }

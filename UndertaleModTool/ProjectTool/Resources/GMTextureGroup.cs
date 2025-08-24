@@ -8,8 +8,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 {
     public class GMTextureGroup : ResourceBase
     {
-        public GMTextureGroup()
-        {
+        public GMTextureGroup() : base()
+		{
             resourceVersion = "1.3";
         }
 

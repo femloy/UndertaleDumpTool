@@ -32,7 +32,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 	public class GMProject : ResourceBase
 	{
-		public GMProject()
+		public GMProject() : base()
 		{
 			resourceVersion = "1.6";
 		}
@@ -111,6 +111,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#region Folders
 
 			foreach (var item in _baseFolders)
+				Folders.Add(new GMFolder(item) { order = Folders.Count });
+			foreach (var item in Dump.ProjectFolders.Distinct())
 				Folders.Add(new GMFolder(item) { order = Folders.Count });
 
 			#endregion

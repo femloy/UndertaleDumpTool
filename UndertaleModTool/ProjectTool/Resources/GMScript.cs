@@ -29,9 +29,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 		/// <summary>
 		/// New custom script, used for the decompiler generated script
 		/// </summary>
-		public GMScript(string _name, string _code)
+		public GMScript(string _name, string _code) : base()
 		{
-			name = Dump.NonconflictingAssetName(_name);
+			name = Dump.SafeAssetName(_name);
 			this._code = _code;
 			_isValid = true;
 			parent = new IdPath("Scripts", "folders/Scripts.yy");
@@ -39,7 +39,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 				Dump.ProjectResources.Add(name, "scripts");
 		}
 
-		public GMScript(UndertaleScript source)
+		public GMScript(UndertaleScript source) : base()
 		{
 			if (source.Code is null)
 				return;

@@ -11,7 +11,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 {
     public class GMSprite : ResourceBase, ISaveable
     {
-        public enum BboxMode
+		public GMSprite() : base()
+		{
+			parent = new IdPath("Sprites", "folders/", true);
+		}
+
+		public enum BboxMode
         {
             Automatic,
             FullImage,
@@ -69,7 +74,11 @@ namespace UndertaleModTool.ProjectTool.Resources
         public uint gridX { get; set; } = 0;
         public uint gridY { get; set; } = 0;
         public List<GMSpriteFrame> frames { get; set; } = new();
-        public GMSequence sequence { get; set; } = new();
+        public GMSequence sequence { get; set; } = new()
+		{
+			playback = GMSequence.PlaybackType.Looped,
+			playbackSpeed = 30.0f
+		};
         public List<GMImageLayer> layers { get; set; } = new();
         public GMNineSliceData nineSlice { get; set; } = null;
 
@@ -148,12 +157,8 @@ namespace UndertaleModTool.ProjectTool.Resources
         /// <summary>
         /// Translate an UndertaleSprite to a new GMSprite
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public GMSprite(UndertaleSprite source) : base()
+        public GMSprite(UndertaleSprite source) : this()
         {
-			if (source == null) return;
-
             name = source.Name.Content;
             (width, height) = (source.Width, source.Height);
 
@@ -265,7 +270,6 @@ namespace UndertaleModTool.ProjectTool.Resources
             #region Sequence
 
             sequence.name = name;
-            sequence.playback = GMSequence.PlaybackType.Looped;
             sequence.playbackSpeed = source.GMS2PlaybackSpeed;
             sequence.playbackSpeedType = (GMSequence.PlaybackSpeedType)source.GMS2PlaybackSpeedType;
             sequence.length = source.Textures.Count;
@@ -291,7 +295,46 @@ namespace UndertaleModTool.ProjectTool.Resources
 
             #endregion
 
-            parent = new IdPath("Sprites", "folders/Sprites.yy");
+			lock (Dump.ProjectResources)
+				Dump.ProjectResources.Add(name, "sprites");
+		}
+
+		/// <summary>
+		/// Translate an UndertaleBackground to a new GMSprite
+		/// </summary>
+		public GMSprite(UndertaleBackground source)
+		{
+			name = Dump.SafeAssetName($"{source.Name.Content}_sprite");
+			(width, height) = (source.Texture.BoundingWidth, source.Texture.BoundingHeight);
+
+			bbox_left = source.Texture.TargetX;
+			bbox_top = source.Texture.TargetY;
+			bbox_right = source.Texture.TargetX + source.Texture.TargetWidth - 1;
+			bbox_bottom = source.Texture.TargetX + source.Texture.TargetHeight - 1;
+
+			if (Dump.Options.asset_texturegroups)
+				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).GetName());
+
+			sequence.name = name;
+			sequence.length = 1;
+
+			var layer = new GMImageLayer();
+			layer.name = Dump.ToGUID($"{name}.layer");
+			layers.Add(layer);
+
+			UndertaleTexturePageItem texture = source.Texture;
+			if (texture is null)
+			{
+				TpageAlign.ConsoleGroup = true;
+				textureGroupId.SetName(TpageAlign.CONSOLE_GROUP_NAME);
+
+				if (!Dump.Options.sprite_missing_texture)
+					bboxMode = BboxMode.Manual;
+			}
+			AddFrameFrom(texture, 0);
+
+			parent = new IdPath("Sprites", "folders/Tile Sets/", true);
+
 			lock (Dump.ProjectResources)
 				Dump.ProjectResources.Add(name, "sprites");
 		}

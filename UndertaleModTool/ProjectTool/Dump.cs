@@ -10,7 +10,10 @@ using UndertaleModTool.ProjectTool.Resources;
 
 namespace UndertaleModTool.ProjectTool
 {
-    public partial class Dump
+	/// <summary>
+	/// The main controller for the entire decompilation process. Contains dump options, decompiler settings, texture worker, loaded data, etc.
+	/// </summary>
+	public partial class Dump
     {
 		private DumpOptions _options;
         TextureWorker _worker = new();
@@ -23,11 +26,14 @@ namespace UndertaleModTool.ProjectTool
 		public static DumpOptions Options => Current?._options;
 		public static string BasePath { get => Current?._basePath; set => Current._basePath = value; }
 		public static Dictionary<string, string> ProjectResources = new();
+		public static List<string> ProjectFolders = new();
 
 		public Dump()
 		{
 			_options = new();
+
 			ProjectResources.Clear();
+			ProjectFolders.Clear();
 
 			DecompilerSettings = new DecompileSettings()
 			{
@@ -61,6 +67,10 @@ namespace UndertaleModTool.ProjectTool
 			};
 		}
 
+		/// <summary>
+		/// I don't like how UnderAnalyzer presents certain things but I also don't want to touch it.
+		/// My solution? A bunch of regex and string replacements. Use this function to dump an UndertaleCode with the decompiler's own settings and then my own flare.
+		/// </summary>
 		public static string DumpCode(UndertaleCode code)
 		{
 			string codeString = new DecompileContext(DecompileContext, code, DecompilerSettings).DecompileToString().Trim();
@@ -76,7 +86,14 @@ namespace UndertaleModTool.ProjectTool
 			return codeString;
 		}
 
-		public async Task DumpAsset<A, B>(string name, IList<B> list) where A : ISaveable where B : UndertaleNamedResource
+		/// <summary>
+		/// Possibly the unsafest most horrible unreliable and retarded way to future proof dumping a resource.
+		/// </summary>
+		/// <typeparam name="A">ProjectTool.Resource</typeparam>
+		/// <typeparam name="B">UndertaleNamedResource</typeparam>
+		/// <param name="name">Used purely for the progress bar.</param>
+		/// <param name="list">A list of this UndertaleNamedResource.</param>
+		public static async Task DumpAsset<A, B>(string name, IList<B> list) where A : ISaveable where B : UndertaleNamedResource
 		{
 			SetupProgress(name, list.Count);
 
@@ -96,13 +113,20 @@ namespace UndertaleModTool.ProjectTool
 			A.End();
 		}
 
-		public static string NonconflictingAssetName(string name)
+		/// <summary>
+		/// Keeps adding "_new" to a string until there are no assets in the data.win with that name.
+		/// This is for adding decompiler generated assets.
+		/// </summary>
+		public static string SafeAssetName(string name)
 		{
 			while (Data.ByName(name, true) is not null)
 				name += $"_new";
 			return name;
 		}
 
+		/// <summary>
+		/// Begin the dumpy.
+		/// </summary>
         public async Task Start()
         {
 			if (Data is null)
@@ -138,6 +162,8 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMScript, UndertaleScript>("Scripts", Data.Scripts);
 			if (Options.asset_objects)
 				await DumpAsset<GMObject, UndertaleGameObject>("Objects", Data.GameObjects);
+			if (Options.asset_tilesets)
+				await DumpAsset<GMTileSet, UndertaleBackground>("Tile Sets", Data.Backgrounds);
 			if (Options.asset_sprites)
 				await DumpAsset<GMSprite, UndertaleSprite>("Sprites", Data.Sprites);
 

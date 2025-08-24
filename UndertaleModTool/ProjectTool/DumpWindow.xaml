@@ -18,7 +18,7 @@
 			</Label.RenderTransform>
 			<TextBlock TextAlignment="Center"><Run Text="Warning: This is mostly tailored to NXTALE and DELTARUNE."/><LineBreak/><Run Text="It can be unreliable for most other cases, especially mods."/></TextBlock>
 		</Label>
-		<Grid Margin="32,64,32,96">
+		<Grid Margin="32,64,32,96" x:Name="ButtonGrid">
 			<Grid.RowDefinitions>
 				<RowDefinition/>
 				<RowDefinition/>
@@ -32,23 +32,25 @@
 
 			<!-- Sprites -->
 			<UndertaleModTool:ButtonDark Content="Sprites" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4"/>
-			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sprites, Mode=TwoWay}"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_sprites, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0"/>
 
 			<!-- Tile Sets -->
-			
+			<UndertaleModTool:ButtonDark Content="Tile Sets" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="1" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_tilesets, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="1" Grid.Row="1"/>
+
 			<!-- Sounds -->
 			<UndertaleModTool:ButtonDark Content="Sounds" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="1"/>
-			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_sounds, Mode=TwoWay}" Grid.Column="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_sounds, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="1"/>
 
 			<!-- Paths -->
 
 			<!-- Scripts -->
 			<UndertaleModTool:ButtonDark Content="Scripts" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="3"/>
-			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_scripts, Mode=TwoWay}" Grid.Column="3"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_scripts, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="3"/>
 
 			<!-- Shaders -->
 			<UndertaleModTool:ButtonDark Content="Shaders" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2"/>
-			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_shaders, Mode=TwoWay}" Grid.Column="2"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_shaders, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2"/>
 
 			<!-- Fonts -->
 
@@ -56,7 +58,7 @@
 
 			<!-- Objects -->
 			<UndertaleModTool:ButtonDark Content="Objects" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="0" Grid.Row="1"/>
-			<CheckBox Content="Export" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" IsChecked="{Binding asset_objects, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_objects, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="0" Grid.Row="1"/>
 
 			<!-- Rooms -->
 

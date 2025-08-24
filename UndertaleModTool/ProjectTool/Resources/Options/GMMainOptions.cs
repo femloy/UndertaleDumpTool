@@ -7,7 +7,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 {
 	public class GMMainOptions : ResourceBase, ISaveable
 	{
-		public GMMainOptions()
+		public GMMainOptions() : base()
 		{
 			resourceVersion = "1.4";
 			name = "Main";
@@ -55,9 +55,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 
 		public void Save(string rootFolder = null)
 		{
-			if (rootFolder == null)
-				rootFolder = Dump.RelativePath("options/main");
-
+			rootFolder ??= Dump.RelativePath("options/main");
 			Directory.CreateDirectory(rootFolder);
 			Dump.ToJsonFile(rootFolder + "/options_main.yy", this);
 		}
