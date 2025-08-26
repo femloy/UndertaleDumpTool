@@ -118,7 +118,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 			#region Options
 
-			if (Dump.Options.asset_options)
+			if (Dump.Options.project_options)
 			{
 				Options.Add(new IdPath("Main", "options/main/options_main.yy"));
 				Options.Add(new IdPath("Windows", "options/windows/options_windows.yy"));
@@ -150,7 +150,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 			#region Texture Groups
 
-			if (Dump.Options.asset_texturegroups)
+			if (Dump.Options.project_texturegroups)
 			{
 				foreach (var group in TpageAlign.TextureGroups)
 					TextureGroups.Add(new GMTextureGroup(group));
@@ -163,7 +163,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 			#region Audio Groups
 
-			if (Dump.Options.asset_audiogroups)
+			if (Dump.Options.project_audiogroups)
 			{
 				foreach (var group in source.AudioGroups)
 					AudioGroups.Add(new GMAudioGroup(group));
@@ -174,7 +174,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 			#region Included Files
 
-			if (Dump.Options.asset_includedfiles)
+			if (Dump.Options.project_datafiles)
 			{
 				foreach (var file in Files.FileList.Where(i => i.Included))
 					IncludedFiles.Add(new GMIncludedFile(file));

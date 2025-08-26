@@ -107,13 +107,13 @@ namespace UndertaleModTool.ProjectTool.Resources
 				UndertaleAnimationCurve => new IdPath(n, $"animcurves/{n}/{n}.yy"),
 				UndertaleExtension => new IdPath(n, $"extensions/{n}/{n}.yy"),
 				UndertaleFont => new IdPath(n, $"fonts/{n}/{n}.yy"),
-				UndertalePath => new IdPath(n, $"paths/{n}/{n}.yy"),
+				UndertalePath or GMPath => Dump.Options.asset_paths ? new IdPath(n, $"paths/{n}/{n}.yy") : null,
 				UndertaleScript or GMScript => Dump.Options.asset_scripts ? new IdPath(n, $"scripts/{n}/{n}.yy") : null,
 				UndertaleSequence or GMSequence => new IdPath(n, $"sequences/{n}/{n}.yy"),
 				UndertaleShader or GMShader => Dump.Options.asset_shaders ? new IdPath(n, $"shaders/{n}/{n}.yy") : null,
 				UndertaleSound or GMSound => Dump.Options.asset_sounds ? new IdPath(n, $"sounds/{n}/{n}.yy") : null,
-				UndertaleTimeline => new IdPath(n, $"timelines/{n}/{n}.yy"),
-				UndertaleBackground or GMTileSet => new IdPath(n, $"tilesets/{n}/{n}.yy"),
+				UndertaleTimeline or GMTimeline => Dump.Options.asset_timelines ? new IdPath(n, $"timelines/{n}/{n}.yy") : null,
+				UndertaleBackground or GMTileSet => Dump.Options.asset_tilesets ? new IdPath(n, $"tilesets/{n}/{n}.yy") : null,
 				_ => throw new System.NotImplementedException()
 			};
 		}
@@ -121,14 +121,14 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 	public class Point
 	{
-		public Point(double x, double y)
+		public Point(float x, float y)
 		{
 			this.x = x;
 			this.y = y;
 		}
 
-		public double x { get; set; }
-		public double y { get; set; }
+		public float x { get; set; }
+		public float y { get; set; }
 	}
 
 	/// <summary>

@@ -75,7 +75,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (source.Texture is not null)
 				_outputImage = Dump.TexWorker.GetTextureFor(source.Texture, source.Name.Content, true);
 
-			if (Dump.Options.asset_texturegroups)
+			if (Dump.Options.project_texturegroups)
 				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).GetName());
 
 			var tile_ids = source.GMS2TileIds.Select(i => i.ID).ToList();

@@ -16,8 +16,6 @@ namespace UndertaleModTool.ProjectTool
 		/// <summary>
 		/// Add newline and indentation depending on depth
 		/// </summary>
-		/// <param name="sb"></param>
-		/// <param name="depth"></param>
 		static void YYIndent(this StringBuilder sb, int depth)
 		{
 			sb.Append('\n');
@@ -28,12 +26,9 @@ namespace UndertaleModTool.ProjectTool
 		/// <summary>
 		/// Format a JSON like the weird inconsistent way GameMaker does it
 		/// </summary>
-		/// <param name="json"></param>
-		/// <returns></returns>
         public static string Format(string json)
         {
-			// WIP.
-            StringBuilder sb = new();
+            StringBuilder tcws = new();
 			Stack<bool> depth = new();
 
 			bool isObject = false;
@@ -55,7 +50,7 @@ namespace UndertaleModTool.ProjectTool
                 {
 					case '\\':
 						escapeNextChar = !escapeNextChar;
-						sb.Append(c);
+						tcws.Append(c);
 						break;
 
 					case '\"':
@@ -63,20 +58,20 @@ namespace UndertaleModTool.ProjectTool
 							goto default;
 
 						isString = !isString;
-						sb.Append(c);
+						tcws.Append(c);
 						break;
 
                     case '{':
 						if (isString)
 							goto default;
 
-						sb.Append(c);
+						tcws.Append(c);
 						depth.Push(isObject);
 						if (depth.Count <= flatDepth)
 						{
 							isObject = false;
 							if (nextC != '}')
-								sb.YYIndent(depth.Count);
+								tcws.YYIndent(depth.Count);
 						}
 						else
 							isObject = true;
@@ -88,23 +83,23 @@ namespace UndertaleModTool.ProjectTool
 
 						if (prevC != '{')
 						{
-							sb.Append(',');
+							tcws.Append(',');
 							if (!isObject)
-								sb.YYIndent(depth.Count - 1);
+								tcws.YYIndent(depth.Count - 1);
 						}
 						isObject = depth.Pop();
-						sb.Append(c);
+						tcws.Append(c);
 						break;
 
 					case '[':
 						if (isString)
 							goto default;
 
-						sb.Append(c);
+						tcws.Append(c);
 						depth.Push(isObject);
 						isObject = false;
 						if (nextC != ']')
-							sb.YYIndent(depth.Count);
+							tcws.YYIndent(depth.Count);
 						break;
 
 					case ']':
@@ -113,33 +108,33 @@ namespace UndertaleModTool.ProjectTool
 
 						if (prevC != '[')
 						{
-							sb.Append(',');
-							sb.YYIndent(depth.Count - 1);
+							tcws.Append(',');
+							tcws.YYIndent(depth.Count - 1);
 						}
 						isObject = depth.Pop();
-						sb.Append(c);
+						tcws.Append(c);
 						break;
 
                     case ':':
 						if (isString)
 							goto default;
 
-						sb.Append(c);
+						tcws.Append(c);
 						if (!isObject)
-							sb.Append(' ');
+							tcws.Append(' ');
 						break;
 
 					case ',':
 						if (isString)
 							goto default;
 
-						sb.Append(c);
+						tcws.Append(c);
 						if (!isObject)
-							sb.YYIndent(depth.Count);
+							tcws.YYIndent(depth.Count);
 						break;
 
 					default:
-						sb.Append(c);
+						tcws.Append(c);
 						break;
                 }
 
@@ -147,7 +142,7 @@ namespace UndertaleModTool.ProjectTool
 					escapeNextChar = false;
 			}
 
-            return sb.ToString();
+            return tcws.ToString();
         }
     }
 }

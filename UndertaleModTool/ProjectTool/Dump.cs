@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Underanalyzer.Decompiler;
 using UndertaleModLib;
@@ -86,6 +87,20 @@ namespace UndertaleModTool.ProjectTool
 			return codeString;
 		}
 
+		public static string DumpCode(ObservableCollection<UndertaleGameObject.EventAction> actions)
+		{
+			string code = "";
+			if (actions.Count > 1)
+			{
+				foreach (var action in actions)
+					code += $"// {action.CodeId.Name.Content}\n{DumpCode(action.CodeId)}\n";
+				code = code.TrimEnd() + "\n";
+			}
+			else
+				code = DumpCode(actions[0].CodeId);
+			return code;
+		}
+
 		/// <summary>
 		/// Possibly the unsafest most horrible unreliable and retarded way to future proof dumping a resource.
 		/// </summary>
@@ -99,16 +114,17 @@ namespace UndertaleModTool.ProjectTool
 
 			A.Init();
 
-			await Task.Run(() => Parallel.ForEach(list, (source, state, index) =>
+			await Parallel.ForEachAsync(list, (source, token) =>
 			{
 				UpdateStatus(source.Name.Content);
 
-				var asset = (A)Activator.CreateInstance(typeof(A), new object[] { source });
+				var asset = (A)Activator.CreateInstance(typeof(A), new object[] { source })!;
 				if (asset.IsValid())
 					asset.Save();
 
 				IncrementProgress();
-			}));
+				return ValueTask.CompletedTask;
+			});
 
 			A.End();
 		}
@@ -140,24 +156,17 @@ namespace UndertaleModTool.ProjectTool
 			Constants.Init();
 			TpageAlign.Clear();
 
-			if (Options.asset_texturegroups)
+			if (Options.project_texturegroups)
 				TpageAlign.Init();
 
-			if (Options.asset_options)
-			{
-				new Resources.Options.GMMainOptions(Data).Save();
-				new Resources.Options.GMWindowsOptions(Data).Save();
-
-				if (Options.options_other_platforms)
-				{
-					// TODO
-				}
-			}
-
+			if (Options.asset_paths)
+				await DumpAsset<GMPath, UndertalePath>("Paths", Data.Paths);
 			if (Options.asset_shaders)
 				await DumpAsset<GMShader, UndertaleShader>("Shaders", Data.Shaders);
 			if (Options.asset_sounds)
 				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
+			if (Options.asset_timelines)
+				await DumpAsset<GMTimeline, UndertaleTimeline>("Timelines", Data.Timelines);
 			if (Options.asset_scripts)
 				await DumpAsset<GMScript, UndertaleScript>("Scripts", Data.Scripts);
 			if (Options.asset_objects)
@@ -168,10 +177,23 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMSprite, UndertaleSprite>("Sprites", Data.Sprites);
 
 			if (Options.asset_project)
+			{
+				if (Options.project_options)
+				{
+					new Resources.Options.GMMainOptions(Data).Save();
+					new Resources.Options.GMWindowsOptions(Data).Save();
+
+					if (Options.options_other_platforms)
+					{
+						// TODO
+					}
+				}
+
 				new GMProject(Data).Save();
 
-			if (Options.asset_includedfiles)
-				Files.Save();
+				if (Options.project_datafiles)
+					Files.Save();
+			}
 		}
 
         public void Dispose()

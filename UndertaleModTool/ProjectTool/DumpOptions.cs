@@ -8,7 +8,6 @@ namespace UndertaleModTool.ProjectTool
 		public string data_filedir => Path.GetDirectoryName(data_filename); // .../DumpTest
 		public bool data_do_exe { get; set; } = true; // Whether to recognize the GameMaker runner in the data.win folder for publisher info and such
 
-		public bool asset_project { get; set; } = true;
 		public bool asset_sprites { get; set; } = true;
 		public bool asset_sounds { get; set; } = true;
 		public bool asset_shaders { get; set; } = true;
@@ -16,10 +15,9 @@ namespace UndertaleModTool.ProjectTool
 		public bool asset_rooms { get; set; } = false; // mspar remember...
 		public bool asset_objects { get; set; } = true;
 		public bool asset_tilesets { get; set; } = true;
-		public bool asset_texturegroups { get; set; } = true;
-		public bool asset_audiogroups { get; set; } = true;
-		public bool asset_includedfiles { get; set; } = true;
-		public bool asset_options { get; set; } = true;
+		public bool asset_paths { get; set; } = true;
+		public bool asset_timelines { get; set; } = true;
+		public bool asset_project { get; set; } = true;
 
 		public bool script_code_fixes { get; set; } = true; // Fix certain regexable things
 		public bool script_extra { get; set; } = true; // Whether to generate the extra script for global pragmas and extension functions
@@ -40,6 +38,10 @@ namespace UndertaleModTool.ProjectTool
 		public bool texture_uppercase_name { get; set; } = false; // User preference. GameMaker doesn't export their capitalization
 
 		public bool project_sort_assets { get; set; } = true;
+		public bool project_texturegroups { get; set; } = true;
+		public bool project_audiogroups { get; set; } = true;
+		public bool project_datafiles { get; set; } = true;
+		public bool project_options { get; set; } = true;
 
 		public bool tileset_compress { get; set; } = true; // Whether to use GameMaker's modified RLE for tilemaps
 		public bool tileset_reconstruct_sprite { get; set; } = false; // Whether to rebuild the sprite out of the output tileset image (WIP)

@@ -165,7 +165,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (source.V3NineSlice != null)
 				nineSlice = new GMNineSliceData(source.V3NineSlice);
 
-			if (Dump.Options.asset_texturegroups)
+			if (Dump.Options.project_texturegroups)
 			{
 				For3D = TpageAlign.IsSeparateTexture(source);
 				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).GetName());
@@ -312,7 +312,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			bbox_right = source.Texture.TargetX + source.Texture.TargetWidth - 1;
 			bbox_bottom = source.Texture.TargetX + source.Texture.TargetHeight - 1;
 
-			if (Dump.Options.asset_texturegroups)
+			if (Dump.Options.project_texturegroups)
 				textureGroupId.SetName(TpageAlign.TextureForOrDefault(source).GetName());
 
 			sequence.name = name;

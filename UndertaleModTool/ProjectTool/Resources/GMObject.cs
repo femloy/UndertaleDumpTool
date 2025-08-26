@@ -117,16 +117,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 					if (subtype.Actions.Count == 0)
 						continue;
 
-					string code = "";
-					if (subtype.Actions.Count > 1)
-					{
-						foreach (var action in subtype.Actions)
-							code += $"// {action.CodeId.Name.Content}\n{Dump.DumpCode(action.CodeId)}\n";
-						code = code.TrimEnd() + "\n";
-					}
-					else
-						code = Dump.DumpCode(subtype.Actions[0].CodeId);
-
 					GMEvent @event = new();
 					@event.eventType = event_id;
 					
@@ -142,7 +132,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 						fileName = $"{Enum.GetName(typeof(EventType), event_id)}_{@event.eventNum}";
 					}
 
-					_files.Add(fileName, code);
+					_files.Add(fileName, Dump.DumpCode(subtype.Actions));
 					eventList.Add(@event);
 				}
 			}
@@ -167,15 +157,15 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 	public class GMEvent : ResourceBase
 	{
-		public bool isDnD { get; set; } = false;
-		public int eventNum { get; set; }
-		public int eventType { get; set; }
-		public IdPath collisionObjectId { get; set; } = null;
-
 		public GMEvent()
 		{
 			name = "";
 		}
+
+		public bool isDnD { get; set; } = false;
+		public int eventNum { get; set; }
+		public int eventType { get; set; }
+		public IdPath collisionObjectId { get; set; } = null;
 	}
 
 	public class GMObjectProperty : ResourceBase

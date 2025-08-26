@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using UndertaleModLib;
+using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -12,7 +8,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 	{
 		public GMTemplate()
 		{
-			parent = new IdPath("X", "folders/", true);
+			parent = new IdPath("Xs", "folders/", true);
 		}
 
 		/// <summary>
@@ -26,7 +22,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 
 			lock (Dump.ProjectResources)
-				Dump.ProjectResources.Add(name, "x");
+				Dump.ProjectResources.Add(name, "xs");
 		}
 
 		/// <summary>
@@ -35,7 +31,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		/// <param name="rootFolder"></param>
 		public void Save(string rootFolder = null)
 		{
-			rootFolder ??= Dump.RelativePath($"x/{name}");
+			rootFolder ??= Dump.RelativePath($"xs/{name}");
 			Directory.CreateDirectory(rootFolder);
 
 			Dump.ToJsonFile(rootFolder + $"/{name}.yy", this);

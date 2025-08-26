@@ -141,7 +141,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 				Files.InvalidateByFullPath(streamedPath); // Exclude streamed sound from included files
 			}
 
-			if (Dump.Options.asset_audiogroups)
+			if (Dump.Options.project_audiogroups)
 			{
 				string agrpName = source.AudioGroup.Name.Content;
 				audioGroupId.SetName(agrpName);

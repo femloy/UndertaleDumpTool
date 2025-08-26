@@ -28,6 +28,7 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
+				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
 			<!-- Sprites -->
@@ -43,22 +44,26 @@
 			<CheckBox Content="Export" IsChecked="{Binding asset_sounds, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="1"/>
 
 			<!-- Paths -->
+			<UndertaleModTool:ButtonDark Content="Paths" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_paths, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2" Grid.Row="1"/>
 
 			<!-- Scripts -->
 			<UndertaleModTool:ButtonDark Content="Scripts" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="3"/>
 			<CheckBox Content="Export" IsChecked="{Binding asset_scripts, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="3"/>
 
 			<!-- Shaders -->
-			<UndertaleModTool:ButtonDark Content="Shaders" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2"/>
-			<CheckBox Content="Export" IsChecked="{Binding asset_shaders, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2"/>
+			<UndertaleModTool:ButtonDark Content="Shaders" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="0" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_shaders, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="0" Grid.Row="1"/>
 
 			<!-- Fonts -->
 
 			<!-- Timelines -->
+			<UndertaleModTool:ButtonDark Content="Timelines" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="3" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_timelines, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="3" Grid.Row="1"/>
 
 			<!-- Objects -->
-			<UndertaleModTool:ButtonDark Content="Objects" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="0" Grid.Row="1"/>
-			<CheckBox Content="Export" IsChecked="{Binding asset_objects, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="0" Grid.Row="1"/>
+			<UndertaleModTool:ButtonDark Content="Objects" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="2" Grid.Row="0"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_objects, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2" Grid.Row="0"/>
 
 			<!-- Rooms -->
 
@@ -69,7 +74,11 @@
 			<!-- Notes -->
 
 			<!-- Extensions -->
+			
+			<!-- Project -->
+			<UndertaleModTool:ButtonDark Content="Project" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="4" Grid.Row="0"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_project, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="4" Grid.Row="0"/>
 		</Grid>
-		<UndertaleModTool:ButtonDark Content="Do that" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Padding="24,4,24,4" FontSize="24" Margin="0,0,0,16" Click="StartButton_Click"/>
+		<UndertaleModTool:ButtonDark Content="Do that" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Padding="24,4,24,4" FontSize="24" Margin="0,0,0,24" Click="StartButton_Click"/>
 	</Grid>
 </Window>
