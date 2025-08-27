@@ -49,6 +49,8 @@ namespace UndertaleModTool.ProjectTool.Resources
     public class IdPath
     {
 		private string _base_path;
+		private string _path_name;
+
 		public IdPath(string name, string path, bool yyExt = false)
         {
 			if (path.EndsWith('/'))
@@ -68,25 +70,42 @@ namespace UndertaleModTool.ProjectTool.Resources
             }
 
             this.name = name;
-            this.path = path;
+			this.path = path;
+			_path_name = path.Replace(_base_path + "/", "");
         }
 
         public string name { get; set; }
         public string path { get; set; }
 
-        public void SetName(string _name)
+		/// <summary>
+		/// Set name and try to change the path to reflect that
+		/// </summary>
+        public IdPath SetName(string _name)
         {
-            if (path.EndsWith(name))
+            if (path.EndsWith(_path_name))
                 path = _base_path + "/" + _name;
-			else if (path.EndsWith(name + ".yy"))
+			else if (path.EndsWith(_path_name + ".yy"))
 				path = _base_path + "/" + _name + ".yy";
+
 			name = _name;
+			_path_name = _name;
+
+			return this;
+        }
+
+		/// <summary>
+		/// Only change the name, not the path
+		/// </summary>
+		public IdPath SetIndependentName(string _name)
+        {
+			name = _name;
+			return this;
         }
 
 		/// <summary>
 		/// Makes a little "sprites/spr_sprite/spr_sprite.yy" for example
 		/// </summary>
-		public static IdPath From<T>(T source)
+		public static IdPath From<T>(T source, string independent_name = null)
 		{
 			if (source == null) return null;
 
@@ -99,21 +118,23 @@ namespace UndertaleModTool.ProjectTool.Resources
 			else
 				throw new System.Exception("Cannot convert");
 
+			string n2 = independent_name ?? n;
+
 			return source switch
 			{
-				UndertaleSprite or GMSprite => Dump.Options.asset_sprites ? new IdPath(n, $"sprites/{n}/{n}.yy") : null,
-				UndertaleGameObject or GMObject => Dump.Options.asset_objects ? new IdPath(n, $"objects/{n}/{n}.yy") : null,
-				UndertaleRoom => Dump.Options.asset_rooms ? new IdPath(n, $"rooms/{n}/{n}.yy") : null,
-				UndertaleAnimationCurve => new IdPath(n, $"animcurves/{n}/{n}.yy"),
-				UndertaleExtension => new IdPath(n, $"extensions/{n}/{n}.yy"),
-				UndertaleFont => new IdPath(n, $"fonts/{n}/{n}.yy"),
-				UndertalePath or GMPath => Dump.Options.asset_paths ? new IdPath(n, $"paths/{n}/{n}.yy") : null,
-				UndertaleScript or GMScript => Dump.Options.asset_scripts ? new IdPath(n, $"scripts/{n}/{n}.yy") : null,
-				UndertaleSequence or GMSequence => new IdPath(n, $"sequences/{n}/{n}.yy"),
-				UndertaleShader or GMShader => Dump.Options.asset_shaders ? new IdPath(n, $"shaders/{n}/{n}.yy") : null,
-				UndertaleSound or GMSound => Dump.Options.asset_sounds ? new IdPath(n, $"sounds/{n}/{n}.yy") : null,
-				UndertaleTimeline or GMTimeline => Dump.Options.asset_timelines ? new IdPath(n, $"timelines/{n}/{n}.yy") : null,
-				UndertaleBackground or GMTileSet => Dump.Options.asset_tilesets ? new IdPath(n, $"tilesets/{n}/{n}.yy") : null,
+				UndertaleSprite or GMSprite => Dump.Options.asset_sprites ? new IdPath(n2, $"sprites/{n}/{n}.yy") : null,
+				UndertaleGameObject or GMObject => Dump.Options.asset_objects ? new IdPath(n2, $"objects/{n}/{n}.yy") : null,
+				UndertaleRoom => Dump.Options.asset_rooms ? new IdPath(n2, $"rooms/{n}/{n}.yy") : null,
+				UndertaleAnimationCurve => new IdPath(n2, $"animcurves/{n}/{n}.yy"),
+				UndertaleExtension => new IdPath(n2, $"extensions/{n}/{n}.yy"),
+				UndertaleFont => new IdPath(n2, $"fonts/{n}/{n}.yy"),
+				UndertalePath or GMPath => Dump.Options.asset_paths ? new IdPath(n2, $"paths/{n}/{n}.yy") : null,
+				UndertaleScript or GMScript => Dump.Options.asset_scripts ? new IdPath(n2, $"scripts/{n}/{n}.yy") : null,
+				UndertaleSequence or GMSequence => new IdPath(n2, $"sequences/{n}/{n}.yy"),
+				UndertaleShader or GMShader => Dump.Options.asset_shaders ? new IdPath(n2, $"shaders/{n}/{n}.yy") : null,
+				UndertaleSound or GMSound => Dump.Options.asset_sounds ? new IdPath(n2, $"sounds/{n}/{n}.yy") : null,
+				UndertaleTimeline or GMTimeline => Dump.Options.asset_timelines ? new IdPath(n2, $"timelines/{n}/{n}.yy") : null,
+				UndertaleBackground or GMTileSet => Dump.Options.asset_tilesets ? new IdPath(n2, $"tilesets/{n}/{n}.yy") : null,
 				_ => throw new System.NotImplementedException()
 			};
 		}

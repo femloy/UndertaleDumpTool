@@ -66,6 +66,8 @@
 			<CheckBox Content="Export" IsChecked="{Binding asset_objects, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2" Grid.Row="0"/>
 
 			<!-- Rooms -->
+			<UndertaleModTool:ButtonDark Content="Rooms" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="4" Grid.Row="1"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_rooms, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="4" Grid.Row="1"/>
 
 			<!-- Sequences -->
 

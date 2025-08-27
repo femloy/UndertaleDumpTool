@@ -158,6 +158,8 @@ namespace UndertaleModTool.ProjectTool
 
 			if (Options.project_texturegroups)
 				TpageAlign.Init();
+			if (Options.asset_objects || Options.asset_rooms)
+				GMObject.InitProperties();
 
 			if (Options.asset_paths)
 				await DumpAsset<GMPath, UndertalePath>("Paths", Data.Paths);
@@ -171,6 +173,8 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMScript, UndertaleScript>("Scripts", Data.Scripts);
 			if (Options.asset_objects)
 				await DumpAsset<GMObject, UndertaleGameObject>("Objects", Data.GameObjects);
+			if (Options.asset_rooms)
+				await DumpAsset<GMRoom, UndertaleRoom>("Rooms", Data.Rooms);
 			if (Options.asset_tilesets)
 				await DumpAsset<GMTileSet, UndertaleBackground>("Tile Sets", Data.Backgrounds);
 			if (Options.asset_sprites)

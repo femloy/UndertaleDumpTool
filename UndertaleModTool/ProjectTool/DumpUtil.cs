@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
@@ -16,6 +17,18 @@ namespace UndertaleModTool.ProjectTool
                 return new Guid().ToString();
             return new Guid(MD5.HashData(Encoding.UTF8.GetBytes(seed))).ToString();
         }
+		public static string ToInstID(string seed)
+		{
+			Random r;
+
+			if (string.IsNullOrEmpty(seed))
+				r = new();
+			else
+				r = new(BitConverter.ToInt32(MD5.HashData(Encoding.UTF8.GetBytes(seed)), 0));
+
+			const string hex = "0123456789ABCDEF";
+			return "inst_" + new string(Enumerable.Range(1, 8).Select(_ => hex[r.Next(hex.Length)]).ToArray());
+		}
         public static string ToJson(object obj)
         {
             var settings = new JsonSerializerSettings

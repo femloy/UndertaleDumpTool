@@ -41,7 +41,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public List<GMOverriddenProperty> overriddenProperties { get; set; } = new();
 
 		public static Dictionary<UndertaleGameObject, Dictionary<string, string>> CachedProperties = new(); // <object, <propname, propvalue>>
-		public static void Init()
+		public static void InitProperties()
 		{
 			CachedProperties.Clear();
 

@@ -12,7 +12,7 @@ namespace UndertaleModTool.ProjectTool
 		public bool asset_sounds { get; set; } = true;
 		public bool asset_shaders { get; set; } = true;
 		public bool asset_scripts { get; set; } = true;
-		public bool asset_rooms { get; set; } = false; // mspar remember...
+		public bool asset_rooms { get; set; } = true;
 		public bool asset_objects { get; set; } = true;
 		public bool asset_tilesets { get; set; } = true;
 		public bool asset_paths { get; set; } = true;
