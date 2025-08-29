@@ -50,24 +50,29 @@ namespace UndertaleModTool.ProjectTool.Resources
 				if (obj.Events[14].Count == 1 && obj.Events[14][0].Actions.Count == 1)
 				{
 					Dump.UpdateStatus($"Caching properties - {obj}");
-
-					Dictionary<string, string> properties = new();
-					string code = Dump.DumpCode(obj.Events[14][0].Actions[0].CodeId);
-
-					code = code.Replace(";\n", "\n");
-
-					string[] codeLines = code.Trim().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-					foreach (var line in codeLines)
-					{
-						string[] splitLine = line.Split(" = ", 2);
-						if (splitLine.Length == 2)
-							properties.Add(splitLine[0], splitLine[1]);
-					}
-
-					CachedProperties.Add(obj, properties);
+					CachedProperties.Add(obj, ParseProperties(obj.Events[14][0].Actions[0].CodeId));
 				}
 			}
+		}
+
+		public static Dictionary<string, string> ParseProperties(UndertaleCode superCode)
+		{
+			Dictionary<string, string> properties = new();
+
+			string code = Dump.DumpCode(superCode);
+
+			code = code.Replace(";\n", "\n");
+
+			string[] codeLines = code.Trim().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+			foreach (var line in codeLines)
+			{
+				string[] splitLine = line.Split(" = ", 2);
+				if (splitLine.Length == 2)
+					properties.Add(splitLine[0], splitLine[1]);
+			}
+
+			return properties;
 		}
 
 		private Dictionary<string, string> _files = new();
@@ -245,6 +250,47 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 			return (list, overrideList);
 		}
+
+		public static List<GMOverriddenProperty> FromRoomObject(UndertaleRoom.GameObject source)
+		{
+			if (source.PreCreateCode is null)
+				return null;
+
+			List<GMOverriddenProperty> overrideList = new();
+			var props = GMObject.ParseProperties(source.PreCreateCode);
+
+			if (props.Count > 0)
+			{
+				// Get object's family
+				Stack<UndertaleGameObject> objectFamily = new();
+				UndertaleGameObject parentLookup = source.ObjectDefinition;
+
+				while (parentLookup is not null)
+				{
+					objectFamily.Push(parentLookup);
+					parentLookup = parentLookup.ParentId;
+				}
+
+				// Make up all the unique properties
+				Dictionary<string, UndertaleGameObject> uniqueProps = new();
+
+				while (objectFamily.Count > 0)
+				{
+					var obj = objectFamily.Pop();
+					if (GMObject.CachedProperties.TryGetValue(obj, out var uniqueProp))
+					{
+						foreach (var i in uniqueProp)
+							uniqueProps.TryAdd(i.Key, obj);
+					}
+				}
+
+				// Properties
+				foreach (var i in props)
+					overrideList.Add(new(i.Key, i.Value, uniqueProps[i.Key]));
+			}
+
+			return overrideList;
+		}
 	}
 
 	public class GMOverriddenProperty : ResourceBase
@@ -255,6 +301,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 		public GMOverriddenProperty(string propertyName, string propertyValue, UndertaleGameObject propertySource)
 		{
+			if (propertySource is null)
+				throw new NullReferenceException("propertySource is null");
+
 			name = "";
 			propertyId = IdPath.From(propertySource);
 			objectId = IdPath.From(propertySource);

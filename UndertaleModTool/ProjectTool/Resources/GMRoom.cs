@@ -31,7 +31,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 		public static string InstID(UndertaleRoom.GameObject inst)
 		{
-			return Dump.ToInstID(inst.InstanceID.ToString());
+			return "inst_" + Dump.ToHexID(inst.InstanceID.ToString());
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			roomSettings.Height = source.Height;
 			roomSettings.persistent = source.Persistent;
 			viewSettings.clearDisplayBuffer = !source.Flags.HasFlag(UndertaleRoom.RoomEntryFlags.DoNotClearDisplayBuffer);
-			viewSettings.clearViewBackground = source.DrawBackgroundColor;
+			viewSettings.clearViewBackground = source.DrawBackgroundColor || source.Flags.HasFlag(UndertaleRoom.RoomEntryFlags.ShowColor);
 			viewSettings.enableViews = source.Flags.HasFlag(UndertaleRoom.RoomEntryFlags.EnableViews);
 			physicsSettings.PhysicsWorld = source.World;
 			physicsSettings.PhysicsWorldGravityX = source.GravityX;
@@ -77,7 +77,9 @@ namespace UndertaleModTool.ProjectTool.Resources
 				outputLayer.gridY = (int)source.GridHeight;
 
 				// User defined depth?
-				if (i == 0 && sourceLayer.LayerDepth == 0)
+				if (sourceLayer.LayerName.Content.StartsWith("Compatibility_"))
+					outputLayer.userdefinedDepth = true;
+				else if (i == 0 && sourceLayer.LayerDepth == 0)
 					outputLayer.userdefinedDepth = false;
 				else if (sourceLayer == cataclystLayer)
 					outputLayer.userdefinedDepth = true;
@@ -88,7 +90,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 						var upOne = source.Layers[i - 1];
 						var downOne = source.Layers[i + 1];
 
-						if (sourceLayer.LayerDepth != (upOne.LayerDepth + (downOne.LayerDepth - upOne.LayerDepth)) / 2)
+						if (sourceLayer.LayerDepth != (downOne.LayerDepth + upOne.LayerDepth) / 2 || sourceLayer.LayerDepth == downOne.LayerDepth || sourceLayer.LayerDepth == upOne.LayerDepth)
 							outputLayer.userdefinedDepth = true;
 					}
 					else if (i > 0)
@@ -123,8 +125,11 @@ namespace UndertaleModTool.ProjectTool.Resources
 			Directory.CreateDirectory(rootFolder);
 
 			Dump.ToJsonFile(rootFolder + $"/{name}.yy", this);
+
 			if (_creationCode != null)
 				File.WriteAllText(rootFolder + "/" + RoomCreateCodeFilename, _creationCode);
+			foreach (var i in layers)
+				i.Save(rootFolder);
 		}
 	}
 
@@ -148,7 +153,20 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 		public GMRView(UndertaleRoom.View source)
 		{
-			// TODO
+			visible = source.Enabled;
+			xview = source.ViewX;
+			yview = source.ViewY;
+			wview = source.ViewWidth;
+			hview = source.ViewHeight;
+			xport = source.PortX;
+			yport = source.PortY;
+			wport = source.PortWidth;
+			hport = source.PortHeight;
+			hborder = (int)source.BorderX;
+			vborder = (int)source.BorderY;
+			hspeed = source.SpeedX;
+			vspeed = source.SpeedY;
+			objectId = IdPath.From(source.ObjectId);
 		}
 	}
 

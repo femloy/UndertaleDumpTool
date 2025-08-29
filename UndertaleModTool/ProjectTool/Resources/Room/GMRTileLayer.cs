@@ -21,7 +21,11 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 			if (source.LayerType != UndertaleRoom.LayerType.Tiles)
 				return;
 
-			// TODO
+			tilesetId = IdPath.From(source.TilesData.Background);
+			tiles = new GMTileMap(source.TilesData.TileData);
+
+			x = (int)source.XOffset;
+			y = (int)source.YOffset;
 		}
 	}
 }

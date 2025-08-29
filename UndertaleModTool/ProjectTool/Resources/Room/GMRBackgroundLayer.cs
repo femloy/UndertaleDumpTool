@@ -22,7 +22,25 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 			if (source.LayerType != UndertaleRoom.LayerType.Background)
 				return;
 
-			// TODO
+			spriteId = IdPath.From(source.BackgroundData.Sprite);
+			colour = source.BackgroundData.Color;
+			x = (int)source.XOffset;
+			y = (int)source.XOffset;
+			htiled = source.BackgroundData.TiledHorizontally;
+			vtiled = source.BackgroundData.TiledVertically;
+			hspeed = source.HSpeed;
+			vspeed = source.VSpeed;
+			stretch = source.BackgroundData.Stretch;
+
+			if (source.BackgroundData.Sprite is not null)
+			{
+				if (source.BackgroundData.AnimationSpeed != source.BackgroundData.Sprite.GMS2PlaybackSpeed || (int)source.BackgroundData.AnimationSpeedType != (int)source.BackgroundData.Sprite.GMS2PlaybackSpeedType)
+				{
+					userdefinedAnimFPS = true;
+					animationFPS = source.BackgroundData.AnimationSpeed;
+					animationSpeedType = (GMSequence.PlaybackSpeedType)source.BackgroundData.AnimationSpeedType;
+				}
+			}
 		}
 	}
 }

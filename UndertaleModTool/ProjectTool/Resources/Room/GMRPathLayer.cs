@@ -9,10 +9,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 
 		public GMRPathLayer(UndertaleRoom.Layer source) : base(source)
 		{
-			if (source.LayerType != UndertaleRoom.LayerType.Path)
-				return;
-
-			// TODO
+			// No
 		}
 	}
 }

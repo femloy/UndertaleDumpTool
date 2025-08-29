@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
+using static UndertaleModLib.Models.UndertaleRoom;
 
 namespace UndertaleModTool.ProjectTool.Resources
 {
@@ -18,14 +21,22 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public int SerialiseHeight { get; set; } = 0;
 
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public List<int> TileSerialiseData { get; set; }
+		public List<uint> TileSerialiseData { get; set; }
 
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<int> TileCompressedData { get; set; }
 
-		public GMTileMap(List<int> tileData)
+		public GMTileMap(uint[][] tileData)
 		{
-			TileSerialiseData = tileData;
+			TileSerialiseData = new();
+
+			foreach (var row in tileData)
+			{
+				SerialiseWidth = row.Length;
+				TileSerialiseData.AddRange(row);
+			}
+			SerialiseHeight = tileData.Length;
+
 			if (Dump.Options.tileset_compress)
 				Compress();
 		}
@@ -46,31 +57,37 @@ namespace UndertaleModTool.ProjectTool.Resources
 			TileCompressedData = new();
 			List<int> tiles = new();
 			bool successful = false;
+			bool lastWasRepeat = false;
 
 			for (int i = 0; i < TileSerialiseData.Count; i++)
 			{
-				int tile = TileSerialiseData[i];
+				int tile = (int)TileSerialiseData[i];
+				int repeatThreshold = lastWasRepeat ? 2 : 3; // wtf? this makes it accurate, apparently.
 
 				int repeats = 1;
 				while (i + repeats < TileSerialiseData.Count && TileSerialiseData[i + repeats] == tile)
 					++repeats;
 
-				if (repeats < 3)
-					tiles.Add(tile);
+				if (repeats < repeatThreshold)
+				{
+					tiles.Add(tile == 0 ? int.MinValue : tile);
+					lastWasRepeat = false;
+				}
 
-				if ((i >= TileSerialiseData.Count - 1 || repeats >= 3) && tiles.Count > 0)
+				if ((i >= TileSerialiseData.Count - 1 || repeats >= repeatThreshold) && tiles.Count > 0)
 				{
 					TileCompressedData.Add(tiles.Count);
 					TileCompressedData.AddRange(tiles);
 					tiles.Clear();
 				}
 
-				if (repeats >= 3)
+				if (repeats >= repeatThreshold)
 				{
 					TileCompressedData.Add(-repeats);
-					TileCompressedData.Add(tile);
+					TileCompressedData.Add(tile == 0 ? int.MinValue : tile);
 					i += repeats - 1;
 					successful = true;
+					lastWasRepeat = true;
 				}
 			}
 

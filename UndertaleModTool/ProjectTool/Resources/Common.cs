@@ -109,6 +109,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 		{
 			if (source == null) return null;
 
+			// name
 			string n;
 
 			if (typeof(UndertaleNamedResource).IsAssignableFrom(typeof(T)))
@@ -118,23 +119,26 @@ namespace UndertaleModTool.ProjectTool.Resources
 			else
 				throw new System.Exception("Cannot convert");
 
+			// etc
 			string n2 = independent_name ?? n;
+			bool force = !Dump.Options.asset_project; // Will be null if the asset isn't being exported, but the project is.
 
+			// do that
 			return source switch
 			{
-				UndertaleSprite or GMSprite => Dump.Options.asset_sprites ? new IdPath(n2, $"sprites/{n}/{n}.yy") : null,
-				UndertaleGameObject or GMObject => Dump.Options.asset_objects ? new IdPath(n2, $"objects/{n}/{n}.yy") : null,
-				UndertaleRoom => Dump.Options.asset_rooms ? new IdPath(n2, $"rooms/{n}/{n}.yy") : null,
+				UndertaleSprite or GMSprite => Dump.Options.asset_sprites || force ? new IdPath(n2, $"sprites/{n}/{n}.yy") : null,
+				UndertaleGameObject or GMObject => Dump.Options.asset_objects || force ? new IdPath(n2, $"objects/{n}/{n}.yy") : null,
+				UndertaleRoom => Dump.Options.asset_rooms || force ? new IdPath(n2, $"rooms/{n}/{n}.yy") : null,
 				UndertaleAnimationCurve => new IdPath(n2, $"animcurves/{n}/{n}.yy"),
 				UndertaleExtension => new IdPath(n2, $"extensions/{n}/{n}.yy"),
 				UndertaleFont => new IdPath(n2, $"fonts/{n}/{n}.yy"),
-				UndertalePath or GMPath => Dump.Options.asset_paths ? new IdPath(n2, $"paths/{n}/{n}.yy") : null,
-				UndertaleScript or GMScript => Dump.Options.asset_scripts ? new IdPath(n2, $"scripts/{n}/{n}.yy") : null,
-				UndertaleSequence or GMSequence => new IdPath(n2, $"sequences/{n}/{n}.yy"),
-				UndertaleShader or GMShader => Dump.Options.asset_shaders ? new IdPath(n2, $"shaders/{n}/{n}.yy") : null,
-				UndertaleSound or GMSound => Dump.Options.asset_sounds ? new IdPath(n2, $"sounds/{n}/{n}.yy") : null,
-				UndertaleTimeline or GMTimeline => Dump.Options.asset_timelines ? new IdPath(n2, $"timelines/{n}/{n}.yy") : null,
-				UndertaleBackground or GMTileSet => Dump.Options.asset_tilesets ? new IdPath(n2, $"tilesets/{n}/{n}.yy") : null,
+				UndertalePath or GMPath => Dump.Options.asset_paths || force ? new IdPath(n2, $"paths/{n}/{n}.yy") : null,
+				UndertaleScript or GMScript => Dump.Options.asset_scripts || force ? new IdPath(n2, $"scripts/{n}/{n}.yy") : null,
+				UndertaleSequence or GMSequence => Dump.Options.asset_sequences || force ? new IdPath(n2, $"sequences/{n}/{n}.yy") : null,
+				UndertaleShader or GMShader => Dump.Options.asset_shaders || force ? new IdPath(n2, $"shaders/{n}/{n}.yy") : null,
+				UndertaleSound or GMSound => Dump.Options.asset_sounds || force ? new IdPath(n2, $"sounds/{n}/{n}.yy") : null,
+				UndertaleTimeline or GMTimeline => Dump.Options.asset_timelines || force ? new IdPath(n2, $"timelines/{n}/{n}.yy") : null,
+				UndertaleBackground or GMTileSet => Dump.Options.asset_tilesets || force ? new IdPath(n2, $"tilesets/{n}/{n}.yy") : null,
 				_ => throw new System.NotImplementedException()
 			};
 		}

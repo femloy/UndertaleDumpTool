@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace UndertaleModTool.ProjectTool
 {
@@ -34,6 +35,10 @@ namespace UndertaleModTool.ProjectTool
 			bool isObject = false;
 			bool escapeNextChar = false;
 			bool isString = false;
+
+			bool isTileData = false;
+			uint tileDataWidth = 0; // SerialiseWidth
+			uint tileCount = 0; // Each ,
 
             for (var _ = 0; _ < json.Length; _++)
             {
@@ -95,23 +100,46 @@ namespace UndertaleModTool.ProjectTool
 						if (isString)
 							goto default;
 
+						var temporaryString = tcws.ToString();
+						isTileData = temporaryString.EndsWith("\"TileCompressedData\":") || temporaryString.EndsWith("\"TileSerialiseData\":");
+
+						if (isTileData)
+						{
+							tileDataWidth = 0;
+
+							var regex = Regex.Match(temporaryString, @"""SerialiseWidth"":(\d+)", RegexOptions.RightToLeft);
+							if (regex.Success)
+								tileDataWidth = uint.Parse(regex.Groups[1].Value);
+
+							if (tileDataWidth <= 0)
+								tileDataWidth = 50;
+						}
+
 						tcws.Append(c);
 						depth.Push(isObject);
 						isObject = false;
+
 						if (nextC != ']')
-							tcws.YYIndent(depth.Count);
+						{
+							if (isTileData)
+								tcws.YYIndent(0);
+							else
+								tcws.YYIndent(depth.Count);
+						}
 						break;
 
 					case ']':
 						if (isString)
 							goto default;
 
+						isObject = depth.Pop();
 						if (prevC != '[')
 						{
 							tcws.Append(',');
-							tcws.YYIndent(depth.Count - 1);
+							if (!isTileData)
+								tcws.YYIndent(depth.Count);
 						}
-						isObject = depth.Pop();
+						isTileData = false;
 						tcws.Append(c);
 						break;
 
@@ -129,7 +157,16 @@ namespace UndertaleModTool.ProjectTool
 							goto default;
 
 						tcws.Append(c);
-						if (!isObject)
+
+						if (isTileData)
+						{
+							if (++tileCount >= tileDataWidth)
+							{
+								tcws.YYIndent(0);
+								tileCount = 0;
+							}
+						}
+						else if (!isObject)
 							tcws.YYIndent(depth.Count);
 						break;
 

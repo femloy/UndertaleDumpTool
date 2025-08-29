@@ -4,7 +4,7 @@ using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources.Room
 {
-	public class GMRLayer : ResourceBase
+	public class GMRLayer : ResourceBase, ISaveable
 	{
 		public GMRLayer() : base()
 		{
@@ -37,6 +37,14 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 				effectType = source.EffectType.Content;
 				properties = source.EffectProperties.Select(i => new GMRLayerProperty(i)).ToList();
 			}
+		}
+
+		/// <summary>
+		/// Saves any files the layer may need, like instance creation code
+		/// </summary>
+		public virtual void Save(string rootFolder)
+		{
+			
 		}
 	}
 

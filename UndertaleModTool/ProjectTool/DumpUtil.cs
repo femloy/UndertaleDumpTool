@@ -17,7 +17,7 @@ namespace UndertaleModTool.ProjectTool
                 return new Guid().ToString();
             return new Guid(MD5.HashData(Encoding.UTF8.GetBytes(seed))).ToString();
         }
-		public static string ToInstID(string seed)
+		public static string ToHexID(string seed)
 		{
 			Random r;
 
@@ -27,7 +27,7 @@ namespace UndertaleModTool.ProjectTool
 				r = new(BitConverter.ToInt32(MD5.HashData(Encoding.UTF8.GetBytes(seed)), 0));
 
 			const string hex = "0123456789ABCDEF";
-			return "inst_" + new string(Enumerable.Range(1, 8).Select(_ => hex[r.Next(hex.Length)]).ToArray());
+			return new string(Enumerable.Range(1, 8).Select(_ => hex[r.Next(hex.Length)]).ToArray());
 		}
         public static string ToJson(object obj)
         {
