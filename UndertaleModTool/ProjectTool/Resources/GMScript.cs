@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using UndertaleModLib;
 using UndertaleModLib.Models;
 
 namespace UndertaleModTool.ProjectTool.Resources
@@ -49,9 +50,12 @@ namespace UndertaleModTool.ProjectTool.Resources
 			name = source.Name.Content;
 			_code = Dump.DumpCode(source.Code);
 
+			if (!Dump.Data.IsVersionAtLeast(2, 3))
+				_code = $"function {name}()\n{{\n\t{_code.Trim().Replace("\n", "\n\t")}\n}}\n";
+
 			if (Dump.Options.script_extra)
 			{
-				if (!Dump.Data.GlobalInitScripts.Any(i => i.Code == source.Code))
+				if (Dump.Data.IsVersionAtLeast(2, 3) && !Dump.Data.GlobalInitScripts.Any(i => i.Code == source.Code))
 				{
 					// This is likely an extension function
 					if (!source.Name.Content.Contains("gml_Script_"))
@@ -106,6 +110,17 @@ namespace UndertaleModTool.ProjectTool.Resources
 					}
 				}
 
+				// Compatibility enums
+				string compatCode = "";
+
+				if (Dump.Data.IsGameMaker2() && !Dump.Data.IsYYC())
+				{
+					if (Dump.Data.Scripts.ByName("__init_view") is not null)
+						compatCode += "enum e__VW\n{\n\tXView,\n\tYView,\n\tWView,\n\tHView,\n\tAngle,\n\tHBorder,\n\tVBorder,\n\tHSpeed,\n\tVSpeed,\n\tObject,\n\tVisible,\n\tXPort,\n\tYPort,\n\tWPort,\n\tHPort,\n\tCamera,\n\tSurfaceID,\n};\n\n";
+					if (Dump.Data.Scripts.ByName("__init_background") is not null)
+						compatCode += "enum e__BG\n{\n\tVisible,\n\tForeground,\n\tIndex,\n\tX,\n\tY,\n\tWidth,\n\tHeight,\n\tHTiled,\n\tVTiled,\n\tXScale,\n\tYScale,\n\tHSpeed,\n\tVSpeed,\n\tBlend,\n\tAlpha,\n};\n\n";
+				}
+
 				// Do that
 				string finalCode = "";
 
@@ -113,6 +128,8 @@ namespace UndertaleModTool.ProjectTool.Resources
 					finalCode += $"{_extensionCode.Trim()}\n\n";
 				if (pragmaCode != "")
 					finalCode += $"{pragmaCode.Trim()}\n\n";
+				if (compatCode != "")
+					finalCode += $"// Compatibility\n{compatCode.Trim()}\n\n";
 
 				if (finalCode != "")
 					new GMScript(Dump.Options.script_extra_name, finalCode.Trim() + "\n").Save();

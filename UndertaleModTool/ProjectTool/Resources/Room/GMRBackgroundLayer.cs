@@ -25,7 +25,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 			spriteId = IdPath.From(source.BackgroundData.Sprite);
 			colour = source.BackgroundData.Color;
 			x = (int)source.XOffset;
-			y = (int)source.XOffset;
+			y = (int)source.YOffset;
 			htiled = source.BackgroundData.TiledHorizontally;
 			vtiled = source.BackgroundData.TiledVertically;
 			hspeed = source.HSpeed;

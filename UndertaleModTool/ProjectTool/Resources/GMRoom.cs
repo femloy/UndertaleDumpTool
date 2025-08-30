@@ -29,6 +29,16 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public GMRViewSettings viewSettings { get; set; } = new();
 		public GMRPhysicsSettings physicsSettings { get; set; } = new();
 
+		public static int GridSize = 0;
+		public static void Init()
+		{
+			string game = Dump.Data.GeneralInfo.FileName.Content;
+			if (game == "DELTARUNE" || game == "UNDERTALE" || game == "NXTALE")
+				GridSize = 10;
+			else
+				GridSize = 0;
+		}
+
 		public static string InstID(UndertaleRoom.GameObject inst)
 		{
 			return "inst_" + Dump.ToHexID(inst.InstanceID.ToString());
@@ -73,8 +83,16 @@ namespace UndertaleModTool.ProjectTool.Resources
 				};
 				layers.Add(outputLayer);
 
-				outputLayer.gridX = (int)source.GridWidth;
-				outputLayer.gridY = (int)source.GridHeight;
+				if (GridSize > 0)
+				{
+					outputLayer.gridX = GridSize;
+					outputLayer.gridY = GridSize;
+				}
+				else if (source.GridWidth == source.GridHeight && source.GridWidth < 64 && source.GridHeight < 64)
+				{
+					outputLayer.gridX = (int)source.GridWidth;
+					outputLayer.gridY = (int)source.GridHeight;
+				}
 
 				// User defined depth?
 				if (sourceLayer.LayerName.Content.StartsWith("Compatibility_"))

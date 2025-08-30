@@ -177,14 +177,14 @@ namespace UndertaleModTool.ProjectTool.Resources
 			if (tpage.Name.Content == "default")
 				return "Default";
 			if (Dump.Options.texture_uppercase_name)
-				return tpage.Name.Content.ToUpper();
+				return tpage.Name.Content.ToUpper(); // TODO: doesnt happen in undertale's data.win
 			return tpage.Name.Content;
 		}
         public static UndertaleTextureGroupInfo DefaultGroup()
         {
             if (TextureGroups.Count == 0)
                 throw new Exception("TpageAlign.TextureGroups is empty.\n\nTpageAlign.Init() was not run, or you fucked up so badly that this data.win has no texture groups.");
-            return TextureGroups.ByName("default") ?? TextureGroups[0];
+            return TextureGroups.ByName("Default") ?? TextureGroups.ByName("default") ?? TextureGroups[0];
         }
 		public static UndertaleTextureGroupInfo TextureFor(UndertaleNamedResource source) => _align.GetValueOrDefault(source.Name.Content);
 		public static UndertaleTextureGroupInfo TextureForOrDefault(UndertaleNamedResource source) => TextureFor(source) ?? DefaultGroup();

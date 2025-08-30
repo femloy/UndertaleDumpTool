@@ -98,16 +98,19 @@ namespace UndertaleModTool.ProjectTool.Resources
 			#endregion
 			#region Sprite
 
-			GMSprite sprite = new(source);
-			spriteId = new IdPath(sprite.name, $"sprites/{sprite.name}/", true);
-			sprite.Save();
-
-			if (!Dump.Options.tileset_reconstruct_sprite)
+			if (source.Texture is not null)
 			{
-				tilexoff = out_tilehborder;
-				tileyoff = out_tilevborder;
-				tilehsep = out_tilehborder * 2;
-				tilevsep = out_tilehborder * 2;
+				GMSprite sprite = new(source);
+				spriteId = new IdPath(sprite.name, $"sprites/{sprite.name}/", true);
+				sprite.Save();
+
+				if (!Dump.Options.tileset_reconstruct_sprite)
+				{
+					tilexoff = out_tilehborder;
+					tileyoff = out_tilevborder;
+					tilehsep = out_tilehborder * 2;
+					tilevsep = out_tilehborder * 2;
+				}
 			}
 
 			#endregion

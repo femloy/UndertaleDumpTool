@@ -110,6 +110,9 @@ namespace UndertaleModTool.ProjectTool
 		/// <param name="list">A list of this UndertaleNamedResource.</param>
 		public static async Task DumpAsset<A, B>(string name, IList<B> list) where A : ISaveable where B : UndertaleNamedResource
 		{
+			if (list is null || list.Count == 0)
+				return;
+
 			SetupProgress(name, list.Count);
 
 			A.Init();

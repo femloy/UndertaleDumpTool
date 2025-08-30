@@ -69,7 +69,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			{
 				string[] splitLine = line.Split(" = ", 2);
 				if (splitLine.Length == 2)
-					properties.Add(splitLine[0], splitLine[1]);
+					properties.Add(splitLine[0].Replace("self.", ""), splitLine[1]);
 			}
 
 			return properties;

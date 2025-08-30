@@ -322,17 +322,7 @@ namespace UndertaleModTool.ProjectTool.Resources
 			layer.name = Dump.ToGUID($"{name}.layer");
 			layers.Add(layer);
 
-			UndertaleTexturePageItem texture = source.Texture;
-			if (texture is null)
-			{
-				TpageAlign.ConsoleGroup = true;
-				textureGroupId.SetName(TpageAlign.CONSOLE_GROUP_NAME);
-
-				if (!Dump.Options.sprite_missing_texture)
-					bboxMode = BboxMode.Manual;
-			}
-			AddFrameFrom(texture, 0);
-
+			AddFrameFrom(source.Texture, 0);
 			parent = new IdPath("Sprites", "folders/Tile Sets/", true);
 
 			lock (Dump.ProjectResources)

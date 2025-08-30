@@ -61,7 +61,7 @@ namespace UndertaleModTool.ProjectTool.Resources.Room
 				u1 = u0 + (int)source.Width;
 				v1 = v0 + (int)source.Height;
 				w = (int)(source.Width * source.ScaleX);
-				h = (int)(source.Width * source.ScaleX);
+				h = (int)(source.Height * source.ScaleY);
 				colour = source.Color;
 				x = source.X;
 				y = source.Y;

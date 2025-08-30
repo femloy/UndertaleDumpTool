@@ -49,8 +49,8 @@ namespace UndertaleModTool.ProjectTool.Resources.Options
 			option_window_colour = source.Options.WindowColor;
 			option_author = "My Dumpy";
 
-			option_collision_compatibility = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.FastCollisionCompatibility);
-			option_copy_on_write_enabled = source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.EnableCopyOnWrite);
+			option_collision_compatibility = !Dump.Data.IsVersionAtLeast(2022, 1) || source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.FastCollisionCompatibility);
+			option_copy_on_write_enabled = !Dump.Data.IsVersionAtLeast(2022, 2) || source.Options.Info.HasFlag(UndertaleOptions.OptionsFlags.EnableCopyOnWrite);
 		}
 
 		public void Save(string rootFolder = null)
