@@ -38,17 +38,6 @@ namespace UndertaleModTool.ProjectTool.Resources
 		public GMTileFrames tileAnimation { get; set; } = new();
 		public GMTileMap macroPageTiles { get; set; } = new();
 
-
-
-		private static Dictionary<string, uint> _tilesetColumns = new();
-		public static void Init()
-		{
-			_tilesetColumns.Clear();
-			Dump.ProjectFolders.Add("Tile Sets/Sprites");
-		}
-
-
-
 		/// <summary>
 		/// Check if two lists have equal sequential order but could possibly have wrapped around.
 		/// For example 12345 = 34512.
@@ -125,6 +114,13 @@ namespace UndertaleModTool.ProjectTool.Resources
 
 			lock (Dump.ProjectResources)
 				Dump.ProjectResources.Add(name, "tilesets");
+		}
+
+		private static Dictionary<string, uint> _tilesetColumns = new();
+		public static void Init()
+		{
+			_tilesetColumns.Clear();
+			Dump.ProjectFolders.Add("Tile Sets/Sprites");
 		}
 
 		IMagickImage<byte> _outputImage;

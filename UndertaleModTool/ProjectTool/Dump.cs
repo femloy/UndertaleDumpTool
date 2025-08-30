@@ -163,8 +163,12 @@ namespace UndertaleModTool.ProjectTool
 
 			if (Options.asset_paths)
 				await DumpAsset<GMPath, UndertalePath>("Paths", Data.Paths);
+			if (Options.asset_animcurves)
+				await DumpAsset<GMAnimCurve, UndertaleAnimationCurve>("Animation Curves", Data.AnimationCurves);
 			if (Options.asset_shaders)
 				await DumpAsset<GMShader, UndertaleShader>("Shaders", Data.Shaders);
+			if (Options.asset_extensions)
+				await DumpAsset<GMExtension, UndertaleExtension>("Extensions", Data.Extensions);
 			if (Options.asset_sounds)
 				await DumpAsset<GMSound, UndertaleSound>("Sounds", Data.Sounds);
 			if (Options.asset_timelines)
@@ -175,6 +179,8 @@ namespace UndertaleModTool.ProjectTool
 				await DumpAsset<GMObject, UndertaleGameObject>("Objects", Data.GameObjects);
 			if (Options.asset_rooms)
 				await DumpAsset<GMRoom, UndertaleRoom>("Rooms", Data.Rooms);
+			if (Options.asset_fonts)
+				await DumpAsset<GMFont, UndertaleFont>("Fonts", Data.Fonts);
 			if (Options.asset_tilesets)
 				await DumpAsset<GMTileSet, UndertaleBackground>("Tile Sets", Data.Backgrounds);
 			if (Options.asset_sprites)

@@ -22,6 +22,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition/>
 				<RowDefinition/>
+				<RowDefinition/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
@@ -56,6 +57,8 @@
 			<CheckBox Content="Export" IsChecked="{Binding asset_shaders, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="0" Grid.Row="1"/>
 
 			<!-- Fonts -->
+			<UndertaleModTool:ButtonDark Content="Fonts" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="0" Grid.Row="2"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_fonts, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="0" Grid.Row="2"/>
 
 			<!-- Timelines -->
 			<UndertaleModTool:ButtonDark Content="Timelines" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="3" Grid.Row="1"/>
@@ -72,11 +75,15 @@
 			<!-- Sequences -->
 
 			<!-- Animation Curves -->
+			<UndertaleModTool:ButtonDark Content="Animation Curves" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="12,4,12,4" Grid.Column="2" Grid.Row="2"/>
+			<CheckBox Content="Export" IsChecked="{Binding asset_animcurves, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="2" Grid.Row="2"/>
 
 			<!-- Notes -->
 
 			<!-- Extensions -->
-			
+			<UndertaleModTool:ButtonDark Content="Extensions" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20,4,20,4" Grid.Column="1" Grid.Row="2"/>
+			<CheckBox Content="WIP Export" IsChecked="{Binding asset_extensions, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="1" Grid.Row="2"/>
+
 			<!-- Project -->
 			<UndertaleModTool:ButtonDark Content="Project" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,4,24,4" Grid.Column="4" Grid.Row="0"/>
 			<CheckBox Content="Export" IsChecked="{Binding asset_project, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,48,0,0" Grid.Column="4" Grid.Row="0"/>

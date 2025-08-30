@@ -19,6 +19,9 @@ namespace UndertaleModTool.ProjectTool
 		public bool asset_timelines { get; set; } = true;
 		public bool asset_project { get; set; } = true;
 		public bool asset_sequences { get; set; } = true;
+		public bool asset_fonts { get; set; } = true;
+		public bool asset_extensions { get; set; } = true;
+		public bool asset_animcurves { get; set; } = true;
 
 		public bool script_code_fixes { get; set; } = true; // Fix certain regexable things
 		public bool script_extra { get; set; } = true; // Whether to generate the extra script for global pragmas and extension functions
