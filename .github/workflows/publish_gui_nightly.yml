@@ -78,7 +78,7 @@ jobs:
         files: |
           */*
         body: | 
-          This is a pre-alpha version of this thing. It's not finished yet so please don't report issues. Remember to use it responsibly.
+          This tool is primarily made for NXTALE and DELTARUNE. I'm implementing support for other games very slowly but right now it is unreliable.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Check and fix the release
